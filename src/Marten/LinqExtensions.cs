@@ -26,6 +26,18 @@ namespace Marten
         /// <param name="variable"></param>
         /// <param name="matches"></param>
         /// <returns></returns>
+        public static bool IsOneOf<T>(this T variable, IEnumerable<T> matches)
+        {
+            return matches.Contains(variable);
+        }
+
+		/// <summary>
+        /// Used for Linq queries to match an element to one of a list of values
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="variable"></param>
+        /// <param name="matches"></param>
+        /// <returns></returns>
         public static bool In<T>(this T variable, IEnumerable<T> matches)
         {
             return matches.Contains(variable);
