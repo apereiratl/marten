@@ -99,9 +99,19 @@ namespace Marten
             return load<T>(id);
         }
 
+        public IReadOnlyList<T> Load<T>(IEnumerable<string> ids)
+        {
+            return LoadMany<T>(ids);
+        }
+
         public Task<T> LoadAsync<T>(string id, CancellationToken token)
         {
             return loadAsync<T>(id, token);
+        }
+
+        public Task<IReadOnlyList<T>> LoadAsync<T>(IEnumerable<string> ids, CancellationToken token)
+        {
+            return LoadMany<T>().ByIdAsync(ids, token);
         }
 
         private T load<T>(object id)
@@ -438,9 +448,19 @@ namespace Marten
             return load<T>(id);
         }
 
+        public IReadOnlyList<T> Load<T>(IEnumerable<int> ids)
+        {
+            return LoadMany<T>(ids);
+        }
+
         public T Load<T>(long id)
         {
             return load<T>(id);
+        }
+
+        public IReadOnlyList<T> Load<T>(IEnumerable<long> ids)
+        {
+            return LoadMany<T>(ids);
         }
 
         public T Load<T>(Guid id)
@@ -448,9 +468,19 @@ namespace Marten
             return load<T>(id);
         }
 
+        public IReadOnlyList<T> Load<T>(IEnumerable<Guid> ids)
+        {
+            return LoadMany<T>(ids);
+        }
+
         public Task<T> LoadAsync<T>(int id, CancellationToken token = new CancellationToken())
         {
             return loadAsync<T>(id, token);
+        }
+
+        public Task<IReadOnlyList<T>> LoadAsync<T>(IEnumerable<int> ids, CancellationToken token = new CancellationToken())
+        {
+            return LoadMany<T>().ByIdAsync(ids, token);
         }
 
         public Task<T> LoadAsync<T>(long id, CancellationToken token = new CancellationToken())
@@ -458,9 +488,19 @@ namespace Marten
             return loadAsync<T>(id, token);
         }
 
+        public Task<IReadOnlyList<T>> LoadAsync<T>(IEnumerable<long> ids, CancellationToken token = new CancellationToken())
+        {
+            return LoadMany<T>().ByIdAsync(ids, token);
+        }
+
         public Task<T> LoadAsync<T>(Guid id, CancellationToken token = new CancellationToken())
         {
             return loadAsync<T>(id, token);
+        }
+
+        public Task<IReadOnlyList<T>> LoadAsync<T>(IEnumerable<Guid> ids, CancellationToken token = new CancellationToken())
+        {
+            return LoadMany<T>().ByIdAsync(ids, token);
         }
 
         public IReadOnlyList<TDoc> Search<TDoc>(string searchTerm, string regConfig = FullTextIndex.DefaultRegConfig)
