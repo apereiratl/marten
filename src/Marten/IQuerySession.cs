@@ -21,6 +21,14 @@ namespace Marten
         T Load<T>(string id);
 
         /// <summary>
+        /// Find or load a single document of type T by a string id
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        IReadOnlyList<T> Load<T>(IEnumerable<string> ids);
+
+        /// <summary>
         /// Asynchronously find or load a single document of type T by a string id
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -28,6 +36,15 @@ namespace Marten
         /// <param name="token"></param>
         /// <returns></returns>
         Task<T> LoadAsync<T>(string id, CancellationToken token = default(CancellationToken));
+
+        /// <summary>
+        /// Asynchronously find or load a single document of type T by a string id
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="ids"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        Task<IReadOnlyList<T>> LoadAsync<T>(IEnumerable<string> ids, CancellationToken token = default(CancellationToken));
 
         /// <summary>
         /// Load or find a single document of type T with either a numeric or Guid id
@@ -41,6 +58,14 @@ namespace Marten
         /// Load or find a single document of type T with either a numeric or Guid id
         /// </summary>
         /// <typeparam name="T"></typeparam>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        IReadOnlyList<T> Load<T>(IEnumerable<int> ids);
+
+        /// <summary>
+        /// Load or find a single document of type T with either a numeric or Guid id
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
         T Load<T>(long id);
@@ -49,9 +74,25 @@ namespace Marten
         /// Load or find a single document of type T with either a numeric or Guid id
         /// </summary>
         /// <typeparam name="T"></typeparam>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        IReadOnlyList<T> Load<T>(IEnumerable<long> ids);
+
+        /// <summary>
+        /// Load or find a single document of type T with either a numeric or Guid id
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
         T Load<T>(Guid id);
+
+        /// <summary>
+        /// Load or find a single document of type T with either a numeric or Guid id
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        IReadOnlyList<T> Load<T>(IEnumerable<Guid> ids);
 
         /// <summary>
         /// Asynchronously load or find a single document of type T with either a numeric or Guid id
@@ -66,6 +107,15 @@ namespace Marten
         /// Asynchronously load or find a single document of type T with either a numeric or Guid id
         /// </summary>
         /// <typeparam name="T"></typeparam>
+        /// <param name="ids"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        Task<IReadOnlyList<T>> LoadAsync<T>(IEnumerable<int> ids, CancellationToken token = default(CancellationToken));
+
+        /// <summary>
+        /// Asynchronously load or find a single document of type T with either a numeric or Guid id
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
         /// <param name="id"></param>
         /// <param name="token"></param>
         /// <returns></returns>
@@ -75,10 +125,28 @@ namespace Marten
         /// Asynchronously load or find a single document of type T with either a numeric or Guid id
         /// </summary>
         /// <typeparam name="T"></typeparam>
+        /// <param name="ids"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        Task<IReadOnlyList<T>> LoadAsync<T>(IEnumerable<long> ids, CancellationToken token = default(CancellationToken));
+
+        /// <summary>
+        /// Asynchronously load or find a single document of type T with either a numeric or Guid id
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
         /// <param name="id"></param>
         /// <param name="token"></param>
         /// <returns></returns>
         Task<T> LoadAsync<T>(Guid id, CancellationToken token = default(CancellationToken));
+
+        /// <summary>
+        /// Asynchronously load or find a single document of type T with either a numeric or Guid id
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="id"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        Task<IReadOnlyList<T>> LoadAsync<T>(IEnumerable<Guid> id, CancellationToken token = default(CancellationToken));
 
         // SAMPLE: querying_with_linq
         /// <summary>
