@@ -94,6 +94,11 @@ namespace Marten
             return Tenant.StorageFor<T>();
         }
 
+        private IDocumentStorage storage(Type type)
+        {
+            return Tenant.StorageFor(type);
+        }
+
         public T Load<T>(string id)
         {
             return load<T>(id);
@@ -102,6 +107,11 @@ namespace Marten
         public IReadOnlyList<T> Load<T>(IEnumerable<string> ids)
         {
             return LoadMany<T>(ids);
+        }
+
+        public dynamic Load(Type type, string id)
+        {
+            return load(type, id);
         }
 
         public Task<T> LoadAsync<T>(string id, CancellationToken token)
@@ -126,17 +136,49 @@ namespace Marten
             return storage<T>().Resolve(_identityMap, this, id);
         }
 
+        private dynamic load(Type type, object id)
+        {
+            if (id == null)
+                throw new ArgumentNullException(nameof(id));
+
+            assertNotDisposed();
+
+            assertCorrectIdType(type, id);
+
+            var docStorage = storage(type);
+            return storage(type).Resolve(_identityMap, this, id);
+        }
+
         private void assertCorrectIdType<T>(object id)
         {
             var mapping = Tenant.MappingFor(typeof(T));
-            if (id.GetType() != mapping.IdType)
+            if (id.GetType() == mapping.IdType)
             {
-                if (id.GetType() == typeof(int) && mapping.IdType == typeof(long))
-                    return;
-
-                throw new InvalidOperationException(
-                    $"The id type for {typeof(T).FullName} is {mapping.IdType.Name}, but got {id.GetType().Name}");
+                return;
             }
+
+            if (id is int && mapping.IdType == typeof(long))
+            {
+                return;
+            }
+
+            throw new InvalidOperationException($"The id type for {typeof(T).FullName} is {mapping.IdType.Name}, but got {id.GetType().Name}");
+        }
+
+        private void assertCorrectIdType(Type type, object id)
+        {
+            var mapping = Tenant.MappingFor(type);
+            if (id.GetType() == mapping.IdType)
+            {
+                return;
+            }
+
+            if (id is int && mapping.IdType == typeof(long))
+            {
+                return;
+            }
+
+            throw new InvalidOperationException($"The id type for {type.FullName} is {mapping.IdType.Name}, but got {id.GetType().Name}");
         }
 
         private Task<T> loadAsync<T>(object id, CancellationToken token)
@@ -453,6 +495,11 @@ namespace Marten
             return LoadMany<T>(ids);
         }
 
+        public dynamic Load(Type type, int id)
+        {
+            return load(type, id);
+        }
+
         public T Load<T>(long id)
         {
             return load<T>(id);
@@ -463,6 +510,11 @@ namespace Marten
             return LoadMany<T>(ids);
         }
 
+        public dynamic Load(Type type, long id)
+        {
+            return load(type, id);
+        }
+
         public T Load<T>(Guid id)
         {
             return load<T>(id);
@@ -471,6 +523,11 @@ namespace Marten
         public IReadOnlyList<T> Load<T>(IEnumerable<Guid> ids)
         {
             return LoadMany<T>(ids);
+        }
+
+        public dynamic Load(Type type, Guid id)
+        {
+            return load(type, id);
         }
 
         public Task<T> LoadAsync<T>(int id, CancellationToken token = new CancellationToken())
