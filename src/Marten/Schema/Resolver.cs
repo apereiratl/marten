@@ -155,6 +155,11 @@ namespace Marten.Schema
             }
         }
 
+        dynamic IDocumentStorage.Resolve(int startingIndex, DbDataReader reader, IIdentityMap map)
+        {
+            return Resolve(startingIndex, reader, map);
+        }
+
         public async Task<T> ResolveAsync(IIdentityMap map, IQuerySession session, CancellationToken token, object id)
         {
             if (map.Has<T>(id))

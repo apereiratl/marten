@@ -86,6 +86,12 @@ namespace MartenBenchmarks.BenchAgainst
             return dict.ContainsKey(id) && FromCache<T>(dict[id]) != null;
         }
 
+        public bool Has(Type type, object id)
+        {
+            var dict = Cache[type];
+            return dict.ContainsKey(id) && FromCache(dict[id]) != null;
+        }
+
         public T Retrieve<T>(object id)
         {
             var dict = Cache[typeof(T)];
@@ -112,5 +118,7 @@ namespace MartenBenchmarks.BenchAgainst
             UnitOfWorkOrigin origin = UnitOfWorkOrigin.Loaded);
 
         protected abstract T FromCache<T>(TCacheValue cacheValue);
+
+        protected abstract dynamic FromCache(TCacheValue cacheValue);
     }
 }

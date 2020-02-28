@@ -29,6 +29,14 @@ namespace Marten
         IReadOnlyList<T> Load<T>(IEnumerable<string> ids);
 
         /// <summary>
+        /// Find or load a single document of type T by a string id
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        IReadOnlyList<dynamic> Load(Type type, IEnumerable<string> ids);
+
+        /// <summary>
         /// Find or load a single document of type by a string id
         /// </summary>
         /// <param name="type"></param>
@@ -81,6 +89,14 @@ namespace Marten
         /// <summary>
         /// Load or find a single document of type T with either a numeric or Guid id
         /// </summary>
+        /// <param name="type"></param>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        IReadOnlyList<dynamic> Load(Type type, IEnumerable<int> ids);
+
+        /// <summary>
+        /// Load or find a single document of type T with either a numeric or Guid id
+        /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -105,6 +121,14 @@ namespace Marten
         /// <summary>
         /// Load or find a single document of type T with either a numeric or Guid id
         /// </summary>
+        /// <param name="type"></param>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        IReadOnlyList<dynamic> Load(Type type, IEnumerable<long> ids);
+
+        /// <summary>
+        /// Load or find a single document of type T with either a numeric or Guid id
+        /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -117,6 +141,14 @@ namespace Marten
         /// <param name="ids"></param>
         /// <returns></returns>
         IReadOnlyList<T> Load<T>(IEnumerable<Guid> ids);
+
+        /// <summary>
+        /// Load or find a single document of type T with either a numeric or Guid id
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        IReadOnlyList<dynamic> Load(Type type, IEnumerable<Guid> ids);
 
         /// <summary>
         /// Find or load a single document of type by a guid id

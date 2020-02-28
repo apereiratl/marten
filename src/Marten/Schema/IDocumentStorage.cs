@@ -51,6 +51,8 @@ namespace Marten.Schema
 
         // Goes through the IdentityMap to do its thing
         dynamic Resolve(IIdentityMap map, IQuerySession session, object id);
+
+        dynamic Resolve(int startingIndex, DbDataReader reader, IIdentityMap map);
     }
 
     public interface IDocumentStorage<T>: IDocumentStorage

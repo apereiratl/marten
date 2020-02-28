@@ -60,6 +60,11 @@ namespace Marten.Schema.Hierarchies
             return Resolve(map, session, id);
         }
 
+        dynamic IDocumentStorage.Resolve(int startingIndex, DbDataReader reader, IIdentityMap map)
+        {
+            return Resolve(startingIndex, reader, map);
+        }
+
         public void Remove(IIdentityMap map, object entity)
         {
             _parent.Remove(map, entity);
