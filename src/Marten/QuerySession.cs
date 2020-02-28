@@ -145,7 +145,6 @@ namespace Marten
 
             assertCorrectIdType(type, id);
 
-            var docStorage = storage(type);
             return storage(type).Resolve(_identityMap, this, id);
         }
 
@@ -192,6 +191,12 @@ namespace Marten
         {
             assertNotDisposed();
             return new LoadByKeys<T>(this);
+        }
+
+        private ILoadByKeys<dynamic> LoadMany(Type type)
+        {
+            assertNotDisposed();
+            return new LoadByKeys<dynamic>(type, this);
         }
 
         public IReadOnlyList<T> LoadMany<T>(IEnumerable<string> ids)
@@ -317,15 +322,30 @@ namespace Marten
         private class LoadByKeys<TDoc>: ILoadByKeys<TDoc>
         {
             private readonly QuerySession _parent;
+            private readonly Type _type;
 
             public LoadByKeys(QuerySession parent)
             {
+                _type = null;
+                _parent = parent;
+            }
+
+            public LoadByKeys(Type type, QuerySession parent)
+            {
+                _type = type;
                 _parent = parent;
             }
 
             public IReadOnlyList<TDoc> ById<TKey>(params TKey[] keys)
             {
-                assertCorrectIdType<TKey>();
+                if (_type == null)
+                {
+                    assertCorrectIdType<TKey>();
+                }
+                else
+                {
+                    assertCorrectIdType<TKey>(_type);
+                }
 
                 var hitsAndMisses = this.hitsAndMisses(keys);
                 var hits = hitsAndMisses.Item1;
@@ -337,15 +357,23 @@ namespace Marten
 
             private void assertCorrectIdType<TKey>()
             {
-                var mapping = _parent.Tenant.MappingFor(typeof(TDoc));
-                if (typeof(TKey) != mapping.IdType)
-                {
-                    if (typeof(TKey) == typeof(int) && mapping.IdType == typeof(long))
-                        return;
+                assertCorrectIdType<TKey>(typeof(TDoc));
+            }
 
-                    throw new InvalidOperationException(
-                        $"The id type for {typeof(TDoc).FullName} is {mapping.IdType.Name}, but got {typeof(TKey).Name}");
+            private void assertCorrectIdType<TKey>(Type type)
+            {
+                var mapping = _parent.Tenant.MappingFor(type);
+                if (typeof(TKey) == mapping.IdType)
+                {
+                    return;
                 }
+
+                if (typeof(TKey) == typeof(int) && mapping.IdType == typeof(long))
+                {
+                    return;
+                }
+
+                throw new InvalidOperationException($"The id type for {typeof(TDoc).FullName} is {mapping.IdType.Name}, but got {typeof(TKey).Name}");
             }
 
             public Task<IReadOnlyList<TDoc>> ByIdAsync<TKey>(params TKey[] keys)
@@ -380,15 +408,15 @@ namespace Marten
 
             private Tuple<TKey[], TKey[]> hitsAndMisses<TKey>(TKey[] keys)
             {
-                var hits = keys.Where(key => _parent._identityMap.Has<TDoc>(key)).ToArray();
+                var hits = _type != null ? keys.Where(key => _parent._identityMap.Has(_type, key)).ToArray() : keys.Where(key => _parent._identityMap.Has<TDoc>(key)).ToArray();
                 var misses = keys.Where(x => !hits.Contains(x)).ToArray();
                 return new Tuple<TKey[], TKey[]>(hits, misses);
             }
 
             private IEnumerable<TDoc> fetchDocuments<TKey>(TKey[] keys)
             {
-                var storage = _parent.Tenant.StorageFor(typeof(TDoc));
-                var resolver = storage.As<IDocumentStorage<TDoc>>();
+                var storage = _type != null ? _parent.Tenant.StorageFor(_type) : _parent.Tenant.StorageFor(typeof(TDoc));
+                var resolver = _type != null ? storage.As<IDocumentStorage>() : storage.As<IDocumentStorage<TDoc>>();
                 var cmd = storage.LoadByArrayCommand(keys);
                 cmd.AddTenancy(_parent.Tenant);
 
@@ -598,6 +626,26 @@ namespace Marten
         public Task<IReadOnlyList<TDoc>> WebStyleSearchAsync<TDoc>(string searchTerm, string regConfig = FullTextIndex.DefaultRegConfig, CancellationToken token = default)
         {
             return Query<TDoc>().Where(d => d.WebStyleSearch(searchTerm, regConfig)).ToListAsync();
+        }
+
+        public IReadOnlyList<dynamic> Load(Type type, IEnumerable<string> ids)
+        {
+            return LoadMany(type).ById(ids);
+        }
+
+        public IReadOnlyList<dynamic> Load(Type type, IEnumerable<int> ids)
+        {
+            return LoadMany(type).ById(ids);
+        }
+
+        public IReadOnlyList<dynamic> Load(Type type, IEnumerable<long> ids)
+        {
+            return LoadMany(type).ById(ids);
+        }
+
+        public IReadOnlyList<dynamic> Load(Type type, IEnumerable<Guid> ids)
+        {
+            return LoadMany(type).ById(ids);
         }
     }
 }

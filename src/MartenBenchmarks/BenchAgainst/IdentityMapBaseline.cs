@@ -24,5 +24,10 @@ namespace MartenBenchmarks.BenchAgainst
         {
             return cacheValue.As<T>();
         }
+
+        protected override dynamic FromCache(object cacheValue)
+        {
+            return cacheValue;
+        }
     }
 }
