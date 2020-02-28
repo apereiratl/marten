@@ -92,6 +92,11 @@ namespace Marten.Services
             return Cache.Value.TryFind(typeof(T), out var dict) && dict.TryFind(id, out _);
         }
 
+        public bool Has(Type type, object id)
+        {
+            return Cache.Value.TryFind(type, out var dict) && dict.TryFind(id, out _);
+        }
+
         public T Retrieve<T>(object id)
         {
             if (Cache.Value.TryFind(typeof(T), out var dict) && dict.TryFind(id, out var value))

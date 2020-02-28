@@ -56,6 +56,11 @@ namespace Marten.Services
             return false;
         }
 
+        public bool Has(Type type, object id)
+        {
+            return false;
+        }
+
         public T Retrieve<T>(object id)
         {
             return default(T);

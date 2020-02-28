@@ -140,6 +140,11 @@ namespace Marten.Events
             return Resolve(map, session, id);
         }
 
+        dynamic IDocumentStorage.Resolve(int startingIndex, DbDataReader reader, IIdentityMap map)
+        {
+            return Resolve(startingIndex, reader, map);
+        }
+
         public void Remove(IIdentityMap map, object entity)
         {
             throw new InvalidOperationException("Use IDocumentSession.Events for all persistence of IEvent objects");

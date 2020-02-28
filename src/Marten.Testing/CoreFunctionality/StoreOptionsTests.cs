@@ -1,4 +1,5 @@
 using System;
+using System.Data.Common;
 using System.Linq;
 using Marten.Linq;
 using Marten.Schema;
@@ -155,6 +156,11 @@ namespace Marten.Testing.CoreFunctionality
                 throw new NotImplementedException();
             }
 
+            public dynamic Resolve(int startingIndex, DbDataReader reader, IIdentityMap map)
+            {
+                throw new NotImplementedException();
+            }
+
             public void Remove(IIdentityMap map, object entity)
             {
                 throw new NotImplementedException();
@@ -229,6 +235,11 @@ namespace Marten.Testing.CoreFunctionality
             }
 
             public dynamic Resolve(IIdentityMap map, IQuerySession session, object id)
+            {
+                throw new NotImplementedException();
+            }
+
+            public dynamic Resolve(int startingIndex, DbDataReader reader, IIdentityMap map)
             {
                 throw new NotImplementedException();
             }
