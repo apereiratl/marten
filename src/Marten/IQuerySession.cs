@@ -21,6 +21,14 @@ namespace Marten
         T Load<T>(string id);
 
         /// <summary>
+        /// Find or load a single document of type by a string id
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        dynamic Load(Type type, string id);
+
+        /// <summary>
         /// Asynchronously find or load a single document of type T by a string id
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -38,6 +46,14 @@ namespace Marten
         T Load<T>(int id);
 
         /// <summary>
+        /// Find or load a single document of type by a int id
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        dynamic Load(Type type, int id);
+
+        /// <summary>
         /// Load or find a single document of type T with either a numeric or Guid id
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -46,12 +62,28 @@ namespace Marten
         T Load<T>(long id);
 
         /// <summary>
+        /// Find or load a single document of type by a long id
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        dynamic Load(Type type, long id);
+
+        /// <summary>
         /// Load or find a single document of type T with either a numeric or Guid id
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
         T Load<T>(Guid id);
+
+        /// <summary>
+        /// Find or load a single document of type by a guid id
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        dynamic Load(Type type, Guid id);
 
         /// <summary>
         /// Asynchronously load or find a single document of type T with either a numeric or Guid id

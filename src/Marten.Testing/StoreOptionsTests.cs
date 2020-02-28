@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using Marten.Linq;
 using Marten.Schema;
@@ -149,6 +149,11 @@ namespace Marten.Testing
                 throw new NotImplementedException();
             }
 
+            public dynamic Resolve(IIdentityMap map, IQuerySession session, object id)
+            {
+                throw new NotImplementedException();
+            }
+
             public void Remove(IIdentityMap map, object entity)
             {
                 throw new NotImplementedException();
@@ -218,6 +223,11 @@ namespace Marten.Testing
             }
 
             public void RegisterUpdate(string tenantIdOverride, UpdateStyle updateStyle, UpdateBatch batch, object entity, string json)
+            {
+                throw new NotImplementedException();
+            }
+
+            public dynamic Resolve(IIdentityMap map, IQuerySession session, object id)
             {
                 throw new NotImplementedException();
             }

@@ -279,6 +279,11 @@ namespace Marten.Schema
             _sprocWriter(call, (T)entity, batch, _mapping, currentVersion, newVersion, tenantId);
         }
 
+        dynamic IDocumentStorage.Resolve(IIdentityMap map, IQuerySession session, object id)
+        {
+            return Resolve(map, session, id);
+        }
+
         public void Remove(IIdentityMap map, object entity)
         {
             var id = Identity(entity);
