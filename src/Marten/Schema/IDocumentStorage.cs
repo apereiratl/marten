@@ -48,6 +48,9 @@ namespace Marten.Schema
         void RegisterUpdate(string tenantIdOverride, UpdateStyle updateStyle, UpdateBatch batch, object entity);
 
         void RegisterUpdate(string tenantIdOverride, UpdateStyle updateStyle, UpdateBatch batch, object entity, string json);
+
+        // Goes through the IdentityMap to do its thing
+        dynamic Resolve(IIdentityMap map, IQuerySession session, object id);
     }
 
     public interface IDocumentStorage<T>: IDocumentStorage
