@@ -55,6 +55,11 @@ namespace Marten.Schema.Hierarchies
             _parent.RegisterUpdate(tenantIdOverride, updateStyle, batch, entity, json);
         }
 
+        dynamic IDocumentStorage.Resolve(IIdentityMap map, IQuerySession session, object id)
+        {
+            return Resolve(map, session, id);
+        }
+
         public void Remove(IIdentityMap map, object entity)
         {
             _parent.Remove(map, entity);

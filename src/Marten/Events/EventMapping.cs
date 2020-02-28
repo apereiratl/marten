@@ -135,6 +135,11 @@ namespace Marten.Events
             // Do nothing
         }
 
+        dynamic IDocumentStorage.Resolve(IIdentityMap map, IQuerySession session, object id)
+        {
+            return Resolve(map, session, id);
+        }
+
         public void Remove(IIdentityMap map, object entity)
         {
             throw new InvalidOperationException("Use IDocumentSession.Events for all persistence of IEvent objects");
