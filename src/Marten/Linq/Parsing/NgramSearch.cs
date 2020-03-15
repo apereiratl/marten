@@ -1,7 +1,6 @@
 using System.Linq;
 using System.Linq.Expressions;
 using Marten.Schema;
-using Marten.Util;
 
 namespace Marten.Linq.Parsing
 {
@@ -20,7 +19,7 @@ namespace Marten.Linq.Parsing
             var locator = mapping.FieldFor(members).SqlLocator;
             var values = expression.Arguments.Last().Value();
 
-            return new WhereFragment($"mt_ngram_tsvector({locator}) @@ plainto_tsquery(?)", values);
+            return new WhereFragment($"mt_grams_vector({locator}) @@ mt_grams_query(?)", values);
         }
     }
 }
