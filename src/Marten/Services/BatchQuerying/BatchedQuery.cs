@@ -9,7 +9,7 @@ using Marten.Linq;
 using Marten.Linq.Model;
 using Marten.Linq.QueryHandlers;
 using Marten.Util;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 
 namespace Marten.Services.BatchQuerying
 {
@@ -57,7 +57,7 @@ namespace Marten.Services.BatchQuerying
             return new BatchedQueryable<T>(this, _parent.Query<T>());
         }
 
-        private NpgsqlCommand buildCommand()
+        private SqlCommand buildCommand()
         {
             return CommandBuilder.ToBatchCommand(_parent.Tenant, _items.Select(x => x.Handler));
         }

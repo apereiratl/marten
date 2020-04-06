@@ -1,12 +1,11 @@
-using System;
-using System.Data;
-using System.Threading;
-using Marten.Storage;
-using Marten.Util;
-using NpgsqlTypes;
-
 namespace Marten.Schema.Identity.Sequences
 {
+    using System;
+    using System.Data;
+
+    using Marten.Storage;
+    using Marten.Util;
+
     public class HiloSequence: ISequence
     {
         private readonly ITenant _tenant;
@@ -90,7 +89,7 @@ namespace Marten.Schema.Identity.Sequences
                         // atomically secure the next hi
                         var raw = conn.CreateCommand().CallsSproc(GetNextFunction)
                             .With("entity", _entityName)
-                            .Returns("next", NpgsqlDbType.Bigint).ExecuteScalar();
+                            .Returns("next", SqlDbType.BigInt).ExecuteScalar();
 
                         CurrentHi = Convert.ToInt64(raw);
 

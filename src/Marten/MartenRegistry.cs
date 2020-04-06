@@ -8,7 +8,7 @@ using Marten.Schema.Identity;
 using Marten.Schema.Identity.Sequences;
 using Marten.Schema.Indexing.Unique;
 using Marten.Storage;
-using NpgsqlTypes;
+using System.Data;
 
 namespace Marten
 {
@@ -124,7 +124,7 @@ namespace Marten
             /// <param name="configure">Optional, allows you to customize the Postgresql database index configured for the duplicated field</param>
             /// <returns></returns>
             [Obsolete("Prefer Index() if you just want to optimize querying, or choose Duplicate() if you really want a duplicated field")]
-            public DocumentMappingExpression<T> Searchable(Expression<Func<T, object>> expression, string pgType = null, NpgsqlDbType? dbType = null, Action<IndexDefinition> configure = null)
+            public DocumentMappingExpression<T> Searchable(Expression<Func<T, object>> expression, string pgType = null, SqlDbType? dbType = null, Action<IndexDefinition> configure = null)
             {
                 return Duplicate(expression, pgType, dbType, configure);
             }
@@ -138,7 +138,7 @@ namespace Marten
             /// <param name="configure">Optional, allows you to customize the Postgresql database index configured for the duplicated field</param>
             /// <param name="dbType">Optional, overrides the Npgsql DbType for any parameter usage of this property</param>
             /// <returns></returns>
-            public DocumentMappingExpression<T> Duplicate(Expression<Func<T, object>> expression, string pgType = null, NpgsqlDbType? dbType = null, Action<IndexDefinition> configure = null, bool notNull = false)
+            public DocumentMappingExpression<T> Duplicate(Expression<Func<T, object>> expression, string pgType = null, SqlDbType? dbType = null, Action<IndexDefinition> configure = null, bool notNull = false)
             {
                 alter = mapping =>
                 {

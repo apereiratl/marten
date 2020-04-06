@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
 using Marten.Services;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 using Shouldly;
 using Xunit;
 
@@ -13,11 +13,11 @@ namespace Marten.Testing.Events
     {
         public class RecordingSessionLogger: IMartenSessionLogger
         {
-            public void LogSuccess(NpgsqlCommand command)
+            public void LogSuccess(SqlCommand command)
             {
             }
 
-            public void LogFailure(NpgsqlCommand command, Exception ex)
+            public void LogFailure(SqlCommand command, Exception ex)
             {
             }
 

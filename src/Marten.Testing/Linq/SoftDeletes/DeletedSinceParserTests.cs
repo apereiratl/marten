@@ -4,7 +4,7 @@ using Marten.Linq.SoftDeletes;
 using Marten.Schema;
 using Marten.Services;
 using Marten.Util;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 using Xunit;
 
 namespace Marten.Testing.Linq.SoftDeletes
@@ -29,7 +29,7 @@ namespace Marten.Testing.Linq.SoftDeletes
         {
             var result = _parser.Parse(_mapping, new JsonNetSerializer(), _expression);
 
-            var builder = new CommandBuilder(new NpgsqlCommand());
+            var builder = new CommandBuilder(new SqlCommand());
 
             result.Apply(builder);
 

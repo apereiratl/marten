@@ -1,10 +1,11 @@
 using System;
 using System.Reflection;
 using Baseline;
-using NpgsqlTypes;
 
 namespace Marten.Schema
 {
+    using System.Data;
+
     /// <summary>
     /// Mark a single property or field on a document as a duplicated, searchable field
     /// for optimized searching
@@ -16,7 +17,7 @@ namespace Marten.Schema
         {
             var field = mapping.DuplicateField(member.Name, PgType, notNull: NotNull);
 
-            if (DbType != default(NpgsqlDbType))
+            if (DbType != default)
             {
                 field.DbType = DbType;
             }
@@ -35,10 +36,10 @@ namespace Marten.Schema
         public string PgType { get; set; } = null;
 
         /// <summary>
-        /// Use to override the NpgsqlDbType used when querying with a parameter
+        /// Use to override the SqlDbType used when querying with a parameter
         /// against the property
         /// </summary>
-        public NpgsqlDbType DbType { get; set; }
+        public SqlDbType DbType { get; set; }
 
         /// <summary>
         /// Specifies the type of index to create

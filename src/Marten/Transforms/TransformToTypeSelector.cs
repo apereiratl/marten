@@ -1,15 +1,19 @@
-using System.Data.Common;
-using System.Threading;
-using System.Threading.Tasks;
-using Baseline;
-using Marten.Linq;
-using Marten.Schema;
-using Marten.Services;
-using Marten.Util;
-using Npgsql;
-
 namespace Marten.Transforms
 {
+    using System.Data.Common;
+    using System.IO;
+    using System.Threading;
+    using System.Threading.Tasks;
+
+    using Baseline;
+
+    using Marten.Linq;
+    using Marten.Schema;
+    using Marten.Services;
+    using Marten.Util;
+
+    using Microsoft.Data.SqlClient;
+
     public class TransformToTypeSelector<T>: ISelector<T>
     {
         private readonly IQueryableDocument _document;
@@ -29,7 +33,7 @@ namespace Marten.Transforms
 
         public async Task<T> ResolveAsync(DbDataReader reader, IIdentityMap map, QueryStatistics stats, CancellationToken token)
         {
-            var json = await reader.As<NpgsqlDataReader>().GetTextReaderAsync(0).ConfigureAwait(false);
+            var json = await reader.As<SqlDataReader>().GetFieldValueAsync<TextReader>(0).ConfigureAwait(false);
             return map.Serializer.FromJson<T>(json);
         }
 

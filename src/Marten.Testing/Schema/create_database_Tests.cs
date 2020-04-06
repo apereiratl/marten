@@ -1,7 +1,7 @@
-﻿using System;
+using System;
 using Xunit;
 using Marten.Testing.Documents;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 using Xunit.Sdk;
 
 namespace Marten.Testing.Schema
@@ -20,7 +20,7 @@ namespace Marten.Testing.Schema
                 _.Connection(dbToCreateConnectionString);
             }))
             {
-                Assert.Throws<PostgresException>(() =>
+                Assert.Throws<SqlException>(() =>
                 {
                     store1.Schema.ApplyAllConfiguredChangesToDatabase();
                 });
@@ -64,7 +64,7 @@ namespace Marten.Testing.Schema
             var dbCreated = false;
             using (var store = DocumentStore.For(_ =>
             {
-	            _.AutoCreateSchemaObjects = AutoCreate.All;
+                _.AutoCreateSchemaObjects = AutoCreate.All;
                 _.Connection(ConnectionSource.ConnectionString);
                 _.CreateDatabasesForTenants(c =>
                 {
@@ -111,7 +111,7 @@ namespace Marten.Testing.Schema
                 {
                     connection.Open();
                     command.CommandText = "SELECT extname FROM pg_extension";
-                    NpgsqlDataReader reader = command.ExecuteReader();
+                    var reader = command.ExecuteReader();
 
                     while (reader.Read())
                     {
@@ -133,9 +133,9 @@ namespace Marten.Testing.Schema
 
         private static Tuple<string, string> DbToCreate(string cstring)
         {
-            var builder = new NpgsqlConnectionStringBuilder(cstring);
-            builder.Database = $"_dropme{DateTime.UtcNow.Ticks}_{builder.Database}";
-            return Tuple.Create(builder.ToString(), builder.Database);
+            var builder = new SqlConnectionStringBuilder(cstring);
+            builder.InitialCatalog = $"_dropme{DateTime.UtcNow.Ticks}_{builder.InitialCatalog}";
+            return Tuple.Create(builder.ToString(), builder.InitialCatalog);
         }
 
         public create_database_Tests()
@@ -149,7 +149,7 @@ namespace Marten.Testing.Schema
         {
             try
             {
-                using (var connection = new NpgsqlConnection(ConnectionSource.ConnectionString))
+                using (var connection = new SqlConnection(ConnectionSource.ConnectionString))
                 using (var cmd = connection.CreateCommand())
                 {
                     try

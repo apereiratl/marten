@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Baseline;
 using Marten.Linq;
 using Marten.Services.Includes;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 
 namespace Marten
 {
@@ -264,7 +264,7 @@ namespace Marten
 
         #endregion Shared
 
-        public static NpgsqlCommand ToCommand<T>(this IQueryable<T> queryable, FetchType fetchType = FetchType.FetchMany)
+        public static SqlCommand ToCommand<T>(this IQueryable<T> queryable, FetchType fetchType = FetchType.FetchMany)
         {
             var q = queryable as MartenQueryable<T>;
 

@@ -1,12 +1,9 @@
-﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Baseline;
 using Marten.Schema;
 using Marten.Services;
-using Marten.Services.Deletes;
-using Marten.Util;
-using NpgsqlTypes;
+
 using Shouldly;
 using Xunit;
 
@@ -63,7 +60,6 @@ namespace Marten.Testing.Util
             using (var session = theStore.LightweightSession())
             {
                 session.DeleteWhere<Target>(t => t.Id != null);
-
                 
                 targets.Each(x => session.Store(x));
                 session.SaveChanges();

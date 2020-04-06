@@ -4,8 +4,8 @@ using Marten.Linq;
 using Marten.Linq.Compiled;
 using Marten.Services;
 using Marten.Util;
-using Npgsql;
-using NpgsqlTypes;
+using System.Data;
+using Microsoft.Data.SqlClient;
 using Shouldly;
 using Xunit;
 
@@ -99,12 +99,12 @@ namespace Marten.Testing.Linq.Compiled
                 Number = 5
             };
 
-            var command = new NpgsqlCommand();
+            var command = new SqlCommand();
             var builder = new CommandBuilder(command);
 
             var parameter = setter.AddParameter(target, builder);
 
-            parameter.NpgsqlDbType.ShouldBe(NpgsqlDbType.Jsonb);
+            parameter.SqlDbType.ShouldBe(SqlDbType.NText);
             parameter.Value.ShouldBe("{\"Children\":[{\"color\":\"Blue\",\"name\":\"Ronald McDonald\",\"rank\":5}]}");
         }
     }

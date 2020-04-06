@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Marten.Schema;
 using Marten.Services;
 using Marten.Util;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 
 namespace Marten.Linq
 {
@@ -92,7 +92,7 @@ namespace Marten.Linq
         // Polyfill for the Async Daemon where it doesn't do any harm
         public static string ToSelectClause(this ISelector selector, IQueryableDocument mapping)
         {
-            var builder = new CommandBuilder(new NpgsqlCommand());
+            var builder = new CommandBuilder(new SqlCommand());
             selector.WriteSelectClause(builder, mapping);
 
             return builder.ToString();

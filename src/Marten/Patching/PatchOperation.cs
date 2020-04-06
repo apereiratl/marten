@@ -7,7 +7,7 @@ using Marten.Schema.Identity;
 using Marten.Services;
 using Marten.Transforms;
 using Marten.Util;
-using NpgsqlTypes;
+using System.Data;
 
 namespace Marten.Patching
 {
@@ -51,7 +51,7 @@ namespace Marten.Patching
                 patchParam = builder.AddJsonParameter(replacedValue);
             }
 
-            var versionParam = builder.AddParameter(CombGuidIdGeneration.NewGuid(), NpgsqlDbType.Uuid);
+            var versionParam = builder.AddParameter(CombGuidIdGeneration.NewGuid(), SqlDbType.UniqueIdentifier);
 
             builder.Append("update ");
             builder.Append(_document.Table.QualifiedName);

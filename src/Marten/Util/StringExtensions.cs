@@ -1,6 +1,6 @@
 using System;
 using Newtonsoft.Json.Serialization;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 
 namespace Marten.Util
 {
@@ -17,7 +17,7 @@ namespace Marten.Util
             return text.Substring(0, pos) + replace + text.Substring(pos + search.Length);
         }
 
-        public static string UseParameter(this string text, NpgsqlParameter parameter)
+        public static string UseParameter(this string text, SqlParameter parameter)
         {
             return text.ReplaceFirst("?", ":" + parameter.ParameterName);
         }
@@ -75,6 +75,17 @@ namespace Marten.Util
                 default:
                     return s;
             }
+        }
+
+        public static Version ToVersion(this string s)
+        {
+            var versionItems = s.Split('.');
+
+            var major = int.Parse(versionItems[0]);
+            var minor = int.Parse(versionItems[1]);
+            var revision = int.Parse(versionItems[2]);
+            var version = new Version(major, minor, revision);
+            return version;
         }
     }
 }

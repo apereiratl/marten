@@ -8,10 +8,11 @@ using Marten.Schema.Identity;
 using Marten.Schema.Identity.Sequences;
 using Marten.Services;
 using Marten.Transforms;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 
 namespace Marten.Storage
 {
+
     public interface ITenant
     {
         string TenantId { get; }
@@ -105,6 +106,6 @@ namespace Marten.Storage
         /// Fetch a connection to the tenant database
         /// </summary>
         /// <returns></returns>
-        NpgsqlConnection CreateConnection();
+        SqlConnection CreateConnection();
     }
 }

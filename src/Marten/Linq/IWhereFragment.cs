@@ -2,7 +2,7 @@ using System.Linq;
 using Baseline;
 using Marten.Linq.Parsing;
 using Marten.Util;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 
 namespace Marten.Linq
 {
@@ -65,7 +65,7 @@ namespace Marten.Linq
             if (fragment == null)
                 return null;
 
-            var cmd = new NpgsqlCommand();
+            var cmd = new SqlCommand();
             var builder = new CommandBuilder(cmd);
             fragment.Apply(builder);
 

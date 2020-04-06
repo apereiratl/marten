@@ -1,9 +1,11 @@
 using Marten.Schema;
 using Marten.Storage;
 using Xunit;
+using Microsoft.Data.SqlClient;
 
 namespace Marten.Testing.Bugs
 {
+
     public class Bug_1043_do_not_drop_unchanged_index: IntegratedFixture
     {
         [Fact]
@@ -46,7 +48,7 @@ namespace Marten.Testing.Bugs
             });
             var docTable = new DocumentTable(mapping);
 
-            using (var connection = new Npgsql.NpgsqlConnection(ConnectionSource.ConnectionString))
+            using (var connection = new SqlConnection(ConnectionSource.ConnectionString))
             {
                 connection.Open();
 

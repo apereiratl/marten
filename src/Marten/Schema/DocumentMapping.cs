@@ -14,11 +14,12 @@ using Marten.Schema.Indexing.Unique;
 using Marten.Services.Includes;
 using Marten.Storage;
 using Marten.Util;
-using NpgsqlTypes;
 using Remotion.Linq;
 
 namespace Marten.Schema
 {
+    using System.Data;
+
     public class DocumentMapping: FieldCollection, IDocumentMapping, IQueryableDocument, IFeatureSchema
     {
         public const string BaseAlias = "BASE";
@@ -771,7 +772,7 @@ namespace Marten.Schema
         /// <param name="pgType">Optional, overrides the Postgresql column type for the duplicated field</param>
         /// <param name="configure">Optional, allows you to customize the Postgresql database index configured for the duplicated field</param>
         /// <returns></returns>
-        public void Duplicate(Expression<Func<T, object>> expression, string pgType = null, NpgsqlDbType? dbType = null, Action<IndexDefinition> configure = null, bool notNull = false)
+        public void Duplicate(Expression<Func<T, object>> expression, string pgType = null, SqlDbType? dbType = null, Action<IndexDefinition> configure = null, bool notNull = false)
         {
             var visitor = new FindMembers();
             visitor.Visit(expression);

@@ -1,20 +1,20 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text.RegularExpressions;
-using Baseline;
-using Npgsql;
-using Npgsql.TypeMapping;
-using NpgsqlTypes;
-
 namespace Marten.Util
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
+    using System.Linq;
+    using System.Text.RegularExpressions;
+
+    using Baseline;
+
+    using Microsoft.Data.SqlClient;
+
     public static class TypeMappings
     {
         private static readonly Ref<ImHashMap<Type, string>> PgTypeMemo;
-        private static readonly Ref<ImHashMap<Type, NpgsqlDbType?>> NpgsqlDbTypeMemo;
-        private static readonly Ref<ImHashMap<NpgsqlDbType, Type[]>> TypeMemo;
+        private static readonly Ref<ImHashMap<Type, SqlDbType?>> SqlDbTypeMemo;
+        private static readonly Ref<ImHashMap<SqlDbType, Type[]>> TypeMemo;
 
         public static Func<object, DateTime> CustomMappingToDateTime = null;
         public static Func<object, DateTimeOffset> CustomMappingToDateTimeOffset = null;
@@ -40,23 +40,20 @@ namespace Marten.Util
             // Default Npgsql mappings is 'timestamp' but we are using 'timestamp without time zone'
             PgTypeMemo.Swap(d => d.AddOrUpdate(typeof(DateTime), "timestamp without time zone"));
 
-            NpgsqlDbTypeMemo = Ref.Of(ImHashMap<Type, NpgsqlDbType?>.Empty);
+            SqlDbTypeMemo = Ref.Of(ImHashMap<Type, SqlDbType?>.Empty);
 
-            TypeMemo = Ref.Of(ImHashMap<NpgsqlDbType, Type[]>.Empty);
+            TypeMemo = Ref.Of(ImHashMap<SqlDbType, Type[]>.Empty);
 
-            AddTimespanTypes(NpgsqlDbType.Timestamp, ResolveTypes(NpgsqlDbType.Timestamp));
-            AddTimespanTypes(NpgsqlDbType.TimestampTz, ResolveTypes(NpgsqlDbType.TimestampTz));
-
-            RegisterMapping(typeof(uint), "oid", NpgsqlDbType.Oid);
+            // AddTimespanTypes(SqlDbType.Timestamp, ResolveTypes(SqlDbType.Timestamp));
         }
 
-        public static void RegisterMapping(Type type, string pgType, NpgsqlDbType? npgsqlDbType)
+        public static void RegisterMapping(Type type, string pgType, SqlDbType? SqlDbType)
         {
             PgTypeMemo.Swap(d => d.AddOrUpdate(type, pgType));
-            NpgsqlDbTypeMemo.Swap(d => d.AddOrUpdate(type, npgsqlDbType));
+            SqlDbTypeMemo.Swap(d => d.AddOrUpdate(type, SqlDbType));
         }
 
-        // Lazily retrieve the CLR type to NpgsqlDbType and PgTypeName mapping from exposed INpgsqlTypeMapper.Mappings.
+        // Lazily retrieve the CLR type to SqlDbType and PgTypeName mapping from exposed INpgsqlTypeMapper.Mappings.
         // This is lazily calculated instead of precached because it allows consuming code to register
         // custom npgsql mappings prior to execution.
         private static string ResolvePgType(Type type)
@@ -64,54 +61,53 @@ namespace Marten.Util
             if (PgTypeMemo.Value.TryFind(type, out var value))
                 return value;
 
-            value = GetTypeMapping(type)?.PgTypeName;
+            //value = GetTypeMapping(type)?.PgTypeName;
 
             PgTypeMemo.Swap(d => d.AddOrUpdate(type, value));
 
             return value;
         }
 
-        private static NpgsqlDbType? ResolveNpgsqlDbType(Type type)
+        private static SqlDbType? ResolveSqlDbType(Type type)
         {
-            if (NpgsqlDbTypeMemo.Value.TryFind(type, out var value))
+            if (SqlDbTypeMemo.Value.TryFind(type, out var value))
                 return value;
 
-            value = GetTypeMapping(type)?.NpgsqlDbType;
+            //value = GetTypeMapping(type)?.SqlDbType;
 
-            NpgsqlDbTypeMemo.Swap(d => d.AddOrUpdate(type, value));
+            SqlDbTypeMemo.Swap(d => d.AddOrUpdate(type, value));
 
             return value;
         }
 
-        internal static Type[] ResolveTypes(NpgsqlDbType npgsqlDbType)
+        internal static Type[] ResolveTypes(SqlDbType SqlDbType)
         {
-            if (TypeMemo.Value.TryFind(npgsqlDbType, out var values))
+            if (TypeMemo.Value.TryFind(SqlDbType, out var values))
                 return values;
 
-            values = GetTypeMapping(npgsqlDbType)?.ClrTypes;
+            //values = GetTypeMapping(SqlDbType)?.ClrTypes;
 
-            TypeMemo.Swap(d => d.AddOrUpdate(npgsqlDbType, values));
+            TypeMemo.Swap(d => d.AddOrUpdate(SqlDbType, values));
 
             return values;
         }
 
-        private static NpgsqlTypeMapping GetTypeMapping(Type type)
-            => NpgsqlConnection
-                .GlobalTypeMapper
-                .Mappings
-                .FirstOrDefault(mapping => mapping.ClrTypes.Contains(type));
+        //private static NpgsqlTypeMapping GetTypeMapping(Type type)
+        //    => SqlConnection
+        //        .GlobalTypeMapper
+        //        .Mappings
+        //        .FirstOrDefault(mapping => mapping.ClrTypes.Contains(type));
 
-        private static NpgsqlTypeMapping GetTypeMapping(NpgsqlDbType type)
-            => NpgsqlConnection
-                .GlobalTypeMapper
-                .Mappings
-                .FirstOrDefault(mapping => mapping.NpgsqlDbType == type);
+        //private static NpgsqlTypeMapping GetTypeMapping(SqlDbType type)
+        //    => SqlConnection
+        //        .GlobalTypeMapper
+        //        .Mappings
+        //        .FirstOrDefault(mapping => mapping.SqlDbType == type);
 
         public static string ConvertSynonyms(string type)
         {
             switch (type.ToLower())
             {
-                case "character varying":
                 case "varchar":
                     return "varchar";
 
@@ -120,11 +116,7 @@ namespace Marten.Util
                     return "boolean";
 
                 case "integer":
-                case "serial":
                     return "int";
-
-                case "integer[]":
-                    return "int[]";
 
                 case "decimal":
                 case "numeric":
@@ -134,13 +126,7 @@ namespace Marten.Util
                     return "timestamp";
 
                 case "timestamp with time zone":
-                    return "timestamptz";
-
-                case "array":
-                case "character varying[]":
-                case "varchar[]":
-                case "text[]":
-                    return "array";
+                    return "Timestamp";
             }
 
             return type;
@@ -190,33 +176,33 @@ namespace Marten.Util
         }
 
         /// <summary>
-        /// Some portion of implementation adapted from Npgsql GlobalTypeMapper.ToNpgsqlDbType(Type type)
+        /// Some portion of implementation adapted from Npgsql GlobalTypeMapper.ToSqlDbType(Type type)
         /// https://github.com/npgsql/npgsql/blob/dev/src/Npgsql/TypeMapping/GlobalTypeMapper.cs
-        /// Possibly this method can be trimmed down when Npgsql eventually exposes ToNpgsqlDbType
+        /// Possibly this method can be trimmed down when Npgsql eventually exposes ToSqlDbType
         /// </summary>
-        public static NpgsqlDbType ToDbType(Type type)
+        public static SqlDbType ToDbType(Type type)
         {
-            if (determineNpgsqlDbType(type, out var dbType))
+            if (determineSqlDbType(type, out var dbType))
                 return dbType;
 
-            throw new NotSupportedException("Can't infer NpgsqlDbType for type " + type);
+            throw new NotSupportedException("Can't infer SqlDbType for type " + type);
         }
 
-        public static NpgsqlDbType? TryGetDbType(Type type)
+        public static SqlDbType? TryGetDbType(Type type)
         {
-            if (type == null || !determineNpgsqlDbType(type, out var dbType))
+            if (type == null || !determineSqlDbType(type, out var dbType))
                 return null;
 
             return dbType;
         }
 
-        private static bool determineNpgsqlDbType(Type type, out NpgsqlDbType dbType)
+        private static bool determineSqlDbType(Type type, out SqlDbType dbType)
         {
-            var npgsqlDbType = ResolveNpgsqlDbType(type);
-            if (npgsqlDbType != null)
+            var sqlDbType = ResolveSqlDbType(type);
+            if (sqlDbType != null)
             {
                 {
-                    dbType = npgsqlDbType.Value;
+                    dbType = sqlDbType.Value;
                     return true;
                 }
             }
@@ -229,47 +215,60 @@ namespace Marten.Util
 
             if (type.IsEnum)
             {
-                dbType = NpgsqlDbType.Integer;
+                dbType = SqlDbType.Int;
                 return true;
             }
 
-            if (type.IsArray)
+            if (type.IsString())
             {
-                if (type == typeof(byte[]))
-                {
-                    dbType = NpgsqlDbType.Bytea;
-                    return true;
-                }
-
-                {
-                    dbType = NpgsqlDbType.Array | ToDbType(type.GetElementType());
-                    return true;
-                }
-            }
-
-            var typeInfo = type.GetTypeInfo();
-
-            var ilist = typeInfo.ImplementedInterfaces.FirstOrDefault(x =>
-                x.GetTypeInfo().IsGenericType && x.GetGenericTypeDefinition() == typeof(IList<>));
-            if (ilist != null)
-            {
-                dbType = NpgsqlDbType.Array | ToDbType(ilist.GetGenericArguments()[0]);
+                dbType = SqlDbType.NVarChar;
                 return true;
             }
 
-            if (typeInfo.IsGenericType && type.GetGenericTypeDefinition() == typeof(NpgsqlRange<>))
+            if (type.IsIntegerBased())
             {
-                dbType = NpgsqlDbType.Range | ToDbType(type.GetGenericArguments()[0]);
+                dbType = SqlDbType.BigInt;
                 return true;
             }
+
+            if (type == typeof(Guid))
+            {
+                dbType = SqlDbType.UniqueIdentifier;
+                return true;
+            }
+
+            // no array support in sql server
+            //if (type.IsArray)
+            //{
+            //    if (type == typeof(byte[]))
+            //    {
+            //        dbType = sqlDbType.Bytea;
+            //        return true;
+            //    }
+
+            //    {
+            //        dbType = SqlDbType.Array | ToDbType(type.GetElementType());
+            //        return true;
+            //    }
+            //}
+
+            //var typeInfo = type.GetTypeInfo();
+
+            //var ilist = typeInfo.ImplementedInterfaces.FirstOrDefault(x =>
+            //    x.GetTypeInfo().IsGenericType && x.GetGenericTypeDefinition() == typeof(IList<>));
+            //if (ilist != null)
+            //{
+            //    dbType = SqlDbType.Array | ToDbType(ilist.GetGenericArguments()[0]);
+            //    return true;
+            //}
 
             if (type == typeof(DBNull))
             {
-                dbType = NpgsqlDbType.Unknown;
+                dbType = default;
                 return true;
             }
 
-            dbType = NpgsqlDbType.Unknown;
+            dbType = default;
             return false;
         }
 
@@ -331,9 +330,9 @@ namespace Marten.Util
                 return type;
         }
 
-        public static void AddTimespanTypes(NpgsqlDbType npgsqlDbType, params Type[] types)
+        public static void AddTimespanTypes(SqlDbType SqlDbType, params Type[] types)
         {
-            var timespanTypesList = (npgsqlDbType == NpgsqlDbType.Timestamp) ? TimespanTypes : TimespanZTypes;
+            var timespanTypesList = (SqlDbType == SqlDbType.Timestamp) ? TimespanTypes : TimespanZTypes;
             var typesWithNullables = types.Union(types.Select(t => GetNullableType(t))).Where(t => !timespanTypesList.Contains(t)).ToList();
 
             timespanTypesList.AddRange(typesWithNullables);

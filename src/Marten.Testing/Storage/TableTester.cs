@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using Baseline;
 using Marten.Schema;
 using Marten.Storage;
 using Marten.Util;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 using Shouldly;
 using Xunit;
 
@@ -13,12 +13,12 @@ namespace Marten.Testing.Storage
 {
     public class TableTester : IDisposable
     {
-        private readonly NpgsqlConnection _conn;
+        private readonly SqlConnection _conn;
         private readonly Table theTable;
 
         public TableTester()
         {
-            _conn = new NpgsqlConnection(ConnectionSource.ConnectionString);
+            _conn = new SqlConnection(ConnectionSource.ConnectionString);
             _conn.Open();
 
             _conn.CreateCommand("drop schema if exists testbed cascade;create schema testbed")
@@ -174,9 +174,5 @@ namespace Marten.Testing.Storage
             var diff = theTable.FetchDelta(_conn);
             diff.Matches.ShouldBeTrue();
         }
-
-       
-
-
     }
 }

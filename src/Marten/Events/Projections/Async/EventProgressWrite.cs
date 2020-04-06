@@ -1,8 +1,9 @@
 using System;
+using System.Data;
+
 using Marten.Schema;
 using Marten.Services;
 using Marten.Util;
-using NpgsqlTypes;
 
 namespace Marten.Events.Projections.Async
 {
@@ -21,8 +22,8 @@ namespace Marten.Events.Projections.Async
 
         public void ConfigureCommand(CommandBuilder builder)
         {
-            var nameArg = builder.AddParameter(_key, NpgsqlDbType.Varchar);
-            var numberArg = builder.AddParameter(_number, NpgsqlDbType.Bigint);
+            var nameArg = builder.AddParameter(_key, SqlDbType.VarChar);
+            var numberArg = builder.AddParameter(_number, SqlDbType.BigInt);
             builder.Append($"select {_sproc}(:{nameArg.ParameterName}, :{numberArg.ParameterName})");
         }
 

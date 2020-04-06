@@ -1,16 +1,20 @@
-using System;
-using System.Data.Common;
-using System.Threading;
-using System.Threading.Tasks;
-using Baseline;
-using Marten.Linq;
-using Marten.Services;
-using Marten.Storage;
-using Npgsql;
-using NpgsqlTypes;
-
 namespace Marten.Schema.Hierarchies
 {
+    using System;
+    using System.Data;
+    using System.Data.Common;
+    using System.IO;
+    using System.Threading;
+    using System.Threading.Tasks;
+
+    using Baseline;
+
+    using Marten.Linq;
+    using Marten.Services;
+    using Marten.Storage;
+
+    using Microsoft.Data.SqlClient;
+
     public class SubClassDocumentStorage<T, TBase>
         : IDocumentStorage<T>
         where T : class, TBase
@@ -26,16 +30,19 @@ namespace Marten.Schema.Hierarchies
         }
 
         public TenancyStyle TenancyStyle => _parent.TenancyStyle;
-        public Type DocumentType => typeof(T);
-        public Type TopLevelBaseType { get; } = typeof(TBase);
-        public NpgsqlDbType IdType => _parent.IdType;
 
-        public NpgsqlCommand LoaderCommand(object id)
+        public Type DocumentType => typeof(T);
+
+        public Type TopLevelBaseType { get; } = typeof(TBase);
+
+        public SqlDbType IdType => _parent.IdType;
+
+        public SqlCommand LoaderCommand(object id)
         {
             return _parent.LoaderCommand(id);
         }
 
-        public NpgsqlCommand LoadByArrayCommand<TKey>(TKey[] ids)
+        public SqlCommand LoadByArrayCommand<TKey>(TKey[] ids)
         {
             return _parent.LoadByArrayCommand(ids);
         }
@@ -117,7 +124,7 @@ namespace Marten.Schema.Hierarchies
             var version = await reader.GetFieldValueAsync<Guid>(3, token).ConfigureAwait(false);
             var typeAlias = await reader.GetFieldValueAsync<string>(startingIndex + 2, token).ConfigureAwait(false);
 
-            var json = await reader.As<NpgsqlDataReader>().GetTextReaderAsync(startingIndex).ConfigureAwait(false);
+            var json = await reader.As<SqlDataReader>().GetFieldValueAsync<TextReader>(startingIndex).ConfigureAwait(false);
 
             return map.Get<TBase>(id, _mapping.TypeFor(typeAlias), json, version) as T;
         }

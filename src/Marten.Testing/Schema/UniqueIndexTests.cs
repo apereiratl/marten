@@ -1,7 +1,7 @@
-﻿using System;
+using System;
 using Marten.Events.Projections;
 using Marten.Schema;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 using Shouldly;
 using Xunit;
 
@@ -61,7 +61,7 @@ namespace Marten.Testing.Schema
             return DocumentStore.For(ConnectionSource.ConnectionString);
         }
 
-        public const string UniqueSqlState = "23505";
+        public const int UniqueSqlState = 2601;
 
         [Fact]
         public void given_two_documents_with_the_same_value_for_unique_field_with_multiple_properties_when_created_then_throws_exception()
@@ -85,7 +85,7 @@ namespace Marten.Testing.Schema
                     }
                     catch (Marten.Exceptions.MartenCommandException exception)
                     {
-                        ((PostgresException)exception.InnerException).SqlState.ShouldBe(UniqueSqlState);
+                        ((SqlException)exception.InnerException).Number.ShouldBe(UniqueSqlState);
                     }
                 }
             }
@@ -114,7 +114,7 @@ namespace Marten.Testing.Schema
                     }
                     catch (Marten.Exceptions.MartenCommandException exception)
                     {
-                        ((PostgresException)exception.InnerException).SqlState.ShouldBe(UniqueSqlState);
+                        ((SqlException)exception.InnerException).Number.ShouldBe(UniqueSqlState);
                     }
                 }
             }
@@ -142,7 +142,7 @@ namespace Marten.Testing.Schema
                     }
                     catch (Marten.Exceptions.MartenCommandException exception)
                     {
-                        ((PostgresException)exception.InnerException).SqlState.ShouldBe(UniqueSqlState);
+                        ((SqlException)exception.InnerException).Number.ShouldBe(UniqueSqlState);
                     }
                 }
             }
@@ -171,7 +171,7 @@ namespace Marten.Testing.Schema
                     }
                     catch (Marten.Exceptions.MartenCommandException exception)
                     {
-                        ((PostgresException)exception.InnerException).SqlState.ShouldBe(UniqueSqlState);
+                        ((SqlException)exception.InnerException).Number.ShouldBe(UniqueSqlState);
                     }
                 }
             }

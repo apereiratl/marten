@@ -3,7 +3,6 @@ using Marten.Services;
 using Marten.Util;
 using NodaTime;
 using NodaTime.Serialization.JsonNet;
-using Npgsql;
 
 namespace Marten.NodaTime
 {
@@ -18,7 +17,7 @@ namespace Marten.NodaTime
         /// <param name="shouldConfigureJsonNetSerializer">sets if NodaTime configuration should be setup for JsonNetSerializer. Set value to false if you're using different serializer type or you'd like to maintain your own configuration.</param>
         public static void UseNodaTime(this StoreOptions storeOptions, bool shouldConfigureJsonNetSerializer = true)
         {
-            NpgsqlConnection.GlobalTypeMapper.UseNodaTime();
+            // NpgsqlConnection.GlobalTypeMapper.UseNodaTime();
             TypeMappings.CustomMappingToDateTime = MapToDateTime;
             TypeMappings.CustomMappingToDateTimeOffset = MapToDateTimeOffset;
             TypeMappings.CustomMappingFromDateTime = MapFromDateTime;

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Marten.Schema;
 using Marten.Storage;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 using Shouldly;
 using Xunit;
 
@@ -58,22 +58,22 @@ namespace Marten.Testing.Bugs
 );";
             const string insertSql = "INSERT INTO public.external_table VALUES (1);";
 
-            using (var dbConn = new NpgsqlConnection(ConnectionSource.ConnectionString))
+            using (var dbConn = new SqlConnection(ConnectionSource.ConnectionString))
             {
                 dbConn.Open();
 
-                NpgsqlCommand cmd;
-                using (cmd = new NpgsqlCommand(dropSql, dbConn))
+                SqlCommand cmd;
+                using (cmd = new SqlCommand(dropSql, dbConn))
                 {
                     cmd.ExecuteNonQuery();
                 }
 
-                using (cmd = new NpgsqlCommand(createSql, dbConn))
+                using (cmd = new SqlCommand(createSql, dbConn))
                 {
                     cmd.ExecuteNonQuery();
                 }
 
-                using (cmd = new NpgsqlCommand(insertSql, dbConn))
+                using (cmd = new SqlCommand(insertSql, dbConn))
                 {
                     cmd.ExecuteNonQuery();
                 }

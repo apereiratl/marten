@@ -2,7 +2,7 @@ using System;
 using Baseline;
 using Marten.Linq.Parsing;
 using Marten.Util;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 
 namespace Marten.Linq.Compiled
 {
@@ -22,7 +22,7 @@ namespace Marten.Linq.Compiled
 
         public StringComparisonParser Parser { get; set; }
 
-        public NpgsqlParameter AddParameter(object query, CommandBuilder command)
+        public SqlParameter AddParameter(object query, CommandBuilder command)
         {
             var newValue = _getter((TObject)query);
 
@@ -36,7 +36,7 @@ namespace Marten.Linq.Compiled
             return param;
         }
 
-        public void ReplaceValue(NpgsqlParameter cmdParameter)
+        public void ReplaceValue(SqlParameter cmdParameter)
         {
             // Nothing
         }

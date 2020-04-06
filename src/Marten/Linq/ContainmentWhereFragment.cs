@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Baseline;
 using Marten.Util;
-using NpgsqlTypes;
+using System.Data;
 
 namespace Marten.Linq
 {
@@ -32,7 +32,7 @@ namespace Marten.Linq
         {
             var json = _serializer.ToCleanJson(_dictionary);
             var param = builder.AddParameter(json);
-            param.NpgsqlDbType = NpgsqlDbType.Jsonb;
+            param.SqlDbType = SqlDbType.NVarChar;
 
             builder.Append($"{_wherePrefix}d.data @> :");
             builder.Append(param.ParameterName);

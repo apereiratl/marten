@@ -27,10 +27,10 @@ namespace Marten.Events
 
             AddColumn("type", "varchar", "NULL");
             AddColumn("version", "integer", "NOT NULL");
-            AddColumn("timestamp", "timestamptz", "default (now()) NOT NULL");
+            AddColumn("timestamp", "Timestamp", "default (now()) NOT NULL");
             AddColumn("snapshot", "jsonb");
             AddColumn("snapshot_version", "integer");
-            AddColumn("created", "timestamptz", "default (now()) NOT NULL").CanAdd = true;
+            AddColumn("created", "Timestamp", "default (now()) NOT NULL").CanAdd = true;
 
             if (events.TenancyStyle != TenancyStyle.Conjoined)
             {

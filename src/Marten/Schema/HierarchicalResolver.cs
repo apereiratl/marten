@@ -1,13 +1,17 @@
-using System;
-using System.Data.Common;
-using System.Threading;
-using System.Threading.Tasks;
-using Baseline;
-using Marten.Services;
-using Npgsql;
-
 namespace Marten.Schema
 {
+    using System;
+    using System.Data.Common;
+    using System.IO;
+    using System.Threading;
+    using System.Threading.Tasks;
+
+    using Baseline;
+
+    using Marten.Services;
+
+    using Microsoft.Data.SqlClient;
+
     public class HierarchicalDocumentStorage<T>: DocumentStorage<T> where T : class
     {
         private readonly DocumentMapping _hierarchy;
@@ -43,7 +47,7 @@ namespace Marten.Schema
 
             var version = await reader.GetFieldValueAsync<Guid>(startingIndex + 3, token).ConfigureAwait(false);
 
-            var json = await reader.As<NpgsqlDataReader>().GetTextReaderAsync(startingIndex).ConfigureAwait(false);
+            var json = await reader.As<SqlDataReader>().GetFieldValueAsync<TextReader>(startingIndex).ConfigureAwait(false);
 
             return map.Get<T>(id, _hierarchy.TypeFor(typeAlias), json, version);
         }
@@ -77,7 +81,7 @@ namespace Marten.Schema
 
             var version = await reader.GetFieldValueAsync<Guid>(3, token).ConfigureAwait(false);
 
-            var json = await reader.As<NpgsqlDataReader>().GetTextReaderAsync(0).ConfigureAwait(false);
+            var json = await reader.As<SqlDataReader>().GetFieldValueAsync<TextReader>(0).ConfigureAwait(false);
 
             return map.Get<T>(id, actualType, json, version);
         }

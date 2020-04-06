@@ -6,7 +6,7 @@ using System.Reflection;
 using Baseline;
 using Marten.Schema;
 using Marten.Util;
-using NpgsqlTypes;
+using System.Data;
 using Remotion.Linq.Clauses;
 using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Clauses.ResultOperators;
@@ -121,7 +121,7 @@ namespace Marten.Linq
 
             var json = _serializer.ToCleanJson(dictionary);
             var param = command.AddParameter(json);
-            param.NpgsqlDbType = NpgsqlDbType.Jsonb;
+            param.SqlDbType = SqlDbType.NVarChar;
 
             yield return $"d.data @> :{param.ParameterName}";
         }
@@ -169,7 +169,7 @@ namespace Marten.Linq
             // to exactly map the ToString() like the underlying serializer would. Blech.
             var values = new List<string>();
 
-            var enumerable = ((System.Collections.IEnumerable)from.Value);
+            var enumerable = (System.Collections.IEnumerable)from.Value;
 
             foreach (var obj in enumerable)
             {
@@ -177,7 +177,7 @@ namespace Marten.Linq
             }
 
             var fromParam = command.AddParameter(values.ToArray());
-            fromParam.NpgsqlDbType = NpgsqlDbType.Array | NpgsqlDbType.Text;
+            fromParam.SqlDbType = SqlDbType.NVarChar;
 
             // check/build lhs of ?|
             var item = contains.Item as QuerySourceReferenceExpression;

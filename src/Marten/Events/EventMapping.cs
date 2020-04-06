@@ -12,12 +12,14 @@ using Marten.Services;
 using Marten.Services.Includes;
 using Marten.Storage;
 using Marten.Util;
-using Npgsql;
-using NpgsqlTypes;
+using System.Data;
+using Microsoft.Data.SqlClient;
 using Remotion.Linq;
 
 namespace Marten.Events
 {
+    using System.IO;
+
     public abstract class EventMapping: IDocumentMapping, IQueryableDocument
     {
         private readonly EventGraph _parent;
@@ -39,7 +41,7 @@ namespace Marten.Events
         public string EventTypeName { get; set; }
         public string Alias => EventTypeName;
         public MemberInfo IdMember { get; }
-        public NpgsqlDbType IdType { get; } = NpgsqlDbType.Uuid;
+        public SqlDbType IdType { get; } = SqlDbType.UniqueIdentifier;
         public TenancyStyle TenancyStyle { get; } = TenancyStyle.Single;
 
         Type IDocumentMapping.IdType => typeof(Guid);
@@ -110,14 +112,14 @@ namespace Marten.Events
 
         public Type TopLevelBaseType => DocumentType;
 
-        public NpgsqlCommand LoaderCommand(object id)
+        public SqlCommand LoaderCommand(object id)
         {
-            return new NpgsqlCommand($"select d.data, d.id from {_tableName} as d where id = :id and type = '{Alias}'").With("id", id);
+            return new SqlCommand($"select d.data, d.id from {_tableName} as d where id = :id and type = '{Alias}'").With("id", id);
         }
 
-        public NpgsqlCommand LoadByArrayCommand<TKey>(TKey[] ids)
+        public SqlCommand LoadByArrayCommand<TKey>(TKey[] ids)
         {
-            return new NpgsqlCommand($"select d.data, d.id from {_tableName} as d where id = ANY(:ids) and type = '{Alias}'").With("ids", ids);
+            return new SqlCommand($"select d.data, d.id from {_tableName} as d where id = ANY(:ids) and type = '{Alias}'").With("ids", ids);
         }
 
         public object Identity(object document)
@@ -187,7 +189,7 @@ namespace Marten.Events
         {
             var id = await reader.GetFieldValueAsync<Guid>(startingIndex, token).ConfigureAwait(false);
 
-            var json = await reader.As<NpgsqlDataReader>().GetTextReaderAsync(startingIndex + 1).ConfigureAwait(false);
+            var json = await reader.As<SqlDataReader>().GetFieldValueAsync<TextReader>(startingIndex + 1).ConfigureAwait(false);
 
             return map.Get<T>(id, json, null);
         }

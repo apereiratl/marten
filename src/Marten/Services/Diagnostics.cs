@@ -1,10 +1,11 @@
 using System;
 using Marten.Linq;
 using Marten.Util;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 
 namespace Marten.Services
 {
+
     public class Diagnostics: IDiagnostics
     {
         private readonly DocumentStore _store;
@@ -23,7 +24,7 @@ namespace Marten.Services
         /// <typeparam name="TReturn"></typeparam>
         /// <param name="query"></param>
         /// <returns></returns>
-        public NpgsqlCommand PreviewCommand<TDoc, TReturn>(ICompiledQuery<TDoc, TReturn> query)
+        public SqlCommand PreviewCommand<TDoc, TReturn>(ICompiledQuery<TDoc, TReturn> query)
         {
             QueryStatistics stats;
             var handler = _store.HandlerFactory.HandlerFor(query, out stats);
@@ -59,7 +60,7 @@ namespace Marten.Services
 
             using (var conn = _store.Tenancy.Default.OpenConnection())
             {
-                _postgreSqlVersion = conn.Connection.PostgreSqlVersion;
+                _postgreSqlVersion = conn.Connection.ServerVersion.ToVersion();
             }
 
             return _postgreSqlVersion;

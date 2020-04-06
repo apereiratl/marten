@@ -1,6 +1,6 @@
 using System;
 using System.Linq;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 
 namespace Marten.Exceptions
 {
@@ -9,11 +9,7 @@ namespace Marten.Exceptions
     /// </summary>
     internal static class MartenCommandExceptionFactory
     {
-        internal static MartenCommandException Create
-        (
-            NpgsqlCommand command,
-            Exception innerException
-        )
+        internal static MartenCommandException Create(SqlCommand command, Exception innerException)
         {
             if (TryToMapToMartenCommandNotSupportedException(command, innerException, out var notSupportedException))
             {
@@ -23,12 +19,7 @@ namespace Marten.Exceptions
             return new MartenCommandException(command, innerException);
         }
 
-        internal static bool TryToMapToMartenCommandNotSupportedException
-        (
-            NpgsqlCommand command,
-            Exception innerException,
-            out MartenCommandNotSupportedException notSupportedException
-        )
+        internal static bool TryToMapToMartenCommandNotSupportedException(SqlCommand command, Exception innerException, out MartenCommandNotSupportedException notSupportedException)
         {
             var knownCause = KnownNotSupportedExceptionCause.KnownCauses.FirstOrDefault(x => x.Matches(innerException));
 

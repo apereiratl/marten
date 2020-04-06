@@ -35,7 +35,8 @@ namespace Marten.Testing.Linq.Compiled
 
             cmd.CommandText.ShouldBe("select d.data, d.id, d.mt_version from public.mt_doc_user as d where d.data ->> 'UserName' = :arg0 LIMIT 1");
 
-            cmd.Parameters.Single().Value.ShouldBe("hank");
+            cmd.Parameters.Count.ShouldBe(1);
+            cmd.Parameters[0].Value.ShouldBe("hank");
         }
 
         [Fact]

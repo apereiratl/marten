@@ -6,10 +6,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Marten.Schema;
 using Marten.Storage;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 
 namespace Marten.Services
 {
+    
+
     public class UpdateBatch: IDisposable
     {
         private readonly MemoryPool<char> _writerPool;
@@ -151,7 +153,7 @@ namespace Marten.Services
             }
         }
 
-        private static void executeCallbacks(NpgsqlCommand cmd, BatchCommand batch, List<Exception> list)
+        private static void executeCallbacks(SqlCommand cmd, BatchCommand batch, List<Exception> list)
         {
             using (var reader = cmd.ExecuteReader())
             {
@@ -209,7 +211,7 @@ namespace Marten.Services
             }
         }
 
-        private static async Task executeCallbacksAsync(NpgsqlCommand cmd, CancellationToken tkn, BatchCommand batch,
+        private static async Task executeCallbacksAsync(SqlCommand cmd, CancellationToken tkn, BatchCommand batch,
             List<Exception> list)
         {
             using (var reader = await cmd.ExecuteReaderAsync(tkn).ConfigureAwait(false))

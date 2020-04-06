@@ -2,7 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using Marten.Services;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 
 namespace Marten
 {
@@ -26,14 +26,14 @@ namespace Marten
         /// Log a command that executed successfully
         /// </summary>
         /// <param name="command"></param>
-        void LogSuccess(NpgsqlCommand command);
+        void LogSuccess(SqlCommand command);
 
         /// <summary>
         /// Log a command that failed
         /// </summary>
         /// <param name="command"></param>
         /// <param name="ex"></param>
-        void LogFailure(NpgsqlCommand command, Exception ex);
+        void LogFailure(SqlCommand command, Exception ex);
 
         /// <summary>
         /// Called immediately after committing an IDocumentSession
@@ -60,11 +60,11 @@ namespace Marten
             Debug.WriteLine("");
         }
 
-        public void LogSuccess(NpgsqlCommand command)
+        public void LogSuccess(SqlCommand command)
         {
         }
 
-        public void LogFailure(NpgsqlCommand command, Exception ex)
+        public void LogFailure(SqlCommand command, Exception ex)
         {
         }
 
@@ -90,20 +90,20 @@ namespace Marten
             Console.WriteLine();
         }
 
-        public void LogSuccess(NpgsqlCommand command)
+        public void LogSuccess(SqlCommand command)
         {
             Console.WriteLine(command.CommandText);
-            foreach (var p in command.Parameters.OfType<NpgsqlParameter>())
+            foreach (var p in command.Parameters.OfType<SqlParameter>())
             {
                 Console.WriteLine($"  {p.ParameterName}: {p.Value}");
             }
         }
 
-        public void LogFailure(NpgsqlCommand command, Exception ex)
+        public void LogFailure(SqlCommand command, Exception ex)
         {
             Console.WriteLine("Postgresql command failed!");
             Console.WriteLine(command.CommandText);
-            foreach (var p in command.Parameters.OfType<NpgsqlParameter>())
+            foreach (var p in command.Parameters.OfType<SqlParameter>())
             {
                 Console.WriteLine($"  {p.ParameterName}: {p.Value}");
             }

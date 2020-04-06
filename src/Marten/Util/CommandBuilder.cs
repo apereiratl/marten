@@ -7,11 +7,12 @@ using Baseline;
 using Marten.Linq.QueryHandlers;
 using Marten.Schema.Arguments;
 using Marten.Storage;
-using Npgsql;
-using NpgsqlTypes;
+using Microsoft.Data.SqlClient;
 
 namespace Marten.Util
 {
+    using System.Data;
+
     public class CommandBuilder: IDisposable
     {
         public static readonly string TenantIdArg = ":" + TenantIdArgument.ArgName;
@@ -39,9 +40,9 @@ namespace Marten.Util
             return locator.ToString();
         }
 
-        public static NpgsqlCommand BuildCommand(Action<CommandBuilder> configure)
+        public static SqlCommand BuildCommand(Action<CommandBuilder> configure)
         {
-            var cmd = new NpgsqlCommand();
+            var cmd = new SqlCommand();
             using (var builder = new CommandBuilder(cmd))
             {
                 configure(builder);
@@ -52,9 +53,9 @@ namespace Marten.Util
             return cmd;
         }
 
-        public static NpgsqlCommand ToCommand(ITenant tenant, IQueryHandler handler)
+        public static SqlCommand ToCommand(ITenant tenant, IQueryHandler handler)
         {
-            var command = new NpgsqlCommand();
+            var command = new SqlCommand();
 
             using (var builder = new CommandBuilder(command))
             {
@@ -70,13 +71,13 @@ namespace Marten.Util
             }
         }
 
-        public static NpgsqlCommand ToBatchCommand(ITenant tenant, IEnumerable<IQueryHandler> handlers)
+        public static SqlCommand ToBatchCommand(ITenant tenant, IEnumerable<IQueryHandler> handlers)
         {
             if (handlers.Count() == 1)
                 return ToCommand(tenant, handlers.Single());
 
             var wholeStatement = new StringBuilder();
-            var command = new NpgsqlCommand();
+            var command = new SqlCommand();
 
             foreach (var handler in handlers)
             {
@@ -103,9 +104,9 @@ namespace Marten.Util
         // TEMP -- will shift this to being pooled later
         private readonly StringBuilder _sql = new StringBuilder();
 
-        private readonly NpgsqlCommand _command;
+        private readonly SqlCommand _command;
 
-        public CommandBuilder(NpgsqlCommand command)
+        public CommandBuilder(SqlCommand command)
         {
             _command = command;
         }
@@ -149,22 +150,22 @@ namespace Marten.Util
             _command.AddParameters(parameters);
         }
 
-        public NpgsqlParameter AddParameter(object value, NpgsqlDbType? dbType = null)
+        public SqlParameter AddParameter(object value, SqlDbType? dbType = null)
         {
             return _command.AddParameter(value, dbType);
         }
 
-        public NpgsqlParameter AddJsonParameter(string json)
+        public SqlParameter AddJsonParameter(string json)
         {
-            return _command.AddParameter(json, NpgsqlDbType.Jsonb);
+            return _command.AddParameter(json, SqlDbType.NVarChar);
         }
 
-        public NpgsqlParameter AddNamedParameter(string name, object value)
+        public SqlParameter AddNamedParameter(string name, object value)
         {
             return _command.AddNamedParameter(name, value);
         }
 
-        public void UseParameter(NpgsqlParameter parameter)
+        public void UseParameter(SqlParameter parameter)
         {
             var sql = _sql.ToString();
             _sql.Clear();

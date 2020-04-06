@@ -9,8 +9,10 @@ using Marten.Linq;
 using Marten.Services;
 using Marten.Storage;
 using Marten.Util;
-using Npgsql;
-using NpgsqlTypes;
+
+using System.Data;
+
+using Microsoft.Data.SqlClient;
 
 namespace Marten.Events.Projections.Async
 {
@@ -154,7 +156,7 @@ select max(seq_id) from {_selector.Events.DatabaseSchemaName}.mt_events where se
                         .With("last", lastEncountered)
                         .With("limit", lastPossible)
                         .With("buffer", _settings.LeadingEdgeBuffer.TotalSeconds)
-                        .With("types", EventTypeNames, NpgsqlDbType.Array | NpgsqlDbType.Varchar);
+                        .With("types", EventTypeNames, SqlDbType.NVarChar);
 
                     var page = await buildEventPage(lastEncountered, cmd).ConfigureAwait(false);
 
@@ -182,7 +184,7 @@ select max(seq_id) from {_selector.Events.DatabaseSchemaName}.mt_events where se
             }
         }
 
-        private async Task<EventPage> buildEventPage(long from, NpgsqlCommand cmd)
+        private async Task<EventPage> buildEventPage(long from, SqlCommand cmd)
         {
             IReadOnlyList<IEvent> events;
             IList<long> sequences = new List<long>();

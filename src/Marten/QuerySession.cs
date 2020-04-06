@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Baseline;
+
 using Marten.Linq;
 using Marten.Linq.QueryHandlers;
 using Marten.Schema;
@@ -12,7 +14,9 @@ using Marten.Services;
 using Marten.Services.BatchQuerying;
 using Marten.Storage;
 using Marten.Util;
-using Npgsql;
+
+using Microsoft.Data.SqlClient;
+
 using Remotion.Linq.Parsing.Structure;
 
 namespace Marten
@@ -480,7 +484,7 @@ namespace Marten
             return _connection.FetchAsync(handler, _identityMap.ForQuery(), stats, Tenant, token);
         }
 
-        public NpgsqlConnection Connection
+        public SqlConnection Connection
         {
             get
             {

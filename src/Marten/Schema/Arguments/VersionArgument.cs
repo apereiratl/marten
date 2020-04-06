@@ -2,7 +2,7 @@ using System;
 using System.Linq.Expressions;
 using System.Reflection;
 using Baseline;
-using NpgsqlTypes;
+using System.Data;
 
 namespace Marten.Schema.Arguments
 {
@@ -18,7 +18,7 @@ namespace Marten.Schema.Arguments
         {
             Arg = ArgName;
             Column = DocumentMapping.VersionColumn;
-            DbType = NpgsqlDbType.Uuid;
+            DbType = SqlDbType.UniqueIdentifier;
             PostgresType = "uuid";
         }
 

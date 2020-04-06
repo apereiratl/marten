@@ -3,7 +3,7 @@ using System.Linq;
 using System.Reflection;
 using Baseline;
 using Marten.Util;
-using NpgsqlTypes;
+using System.Data;
 
 namespace Marten.Schema
 {
@@ -32,7 +32,7 @@ namespace Marten.Schema
         public MemberInfo[] Members { get; }
         public string MemberName { get; }
 
-        public NpgsqlDbType NpgsqlDbType => TypeMappings.ToDbType(MemberType);
+        public SqlDbType SqlDbType => TypeMappings.ToDbType(MemberType);
 
         public bool NotNull { get; }
 

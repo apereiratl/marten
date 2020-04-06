@@ -6,7 +6,7 @@ using Marten.Linq;
 using Marten.Schema;
 using Marten.Services.BatchQuerying;
 using Marten.Storage;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 
 namespace Marten
 {
@@ -252,7 +252,7 @@ namespace Marten
         /// <summary>
         /// The currently open Npgsql connection for this session. Use with caution.
         /// </summary>
-        NpgsqlConnection Connection { get; }
+        SqlConnection Connection { get; }
 
         /// <summary>
         /// The session specific logger for this session. Can be set for better integration

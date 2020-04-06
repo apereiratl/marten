@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Linq.Expressions;
 using Marten.Linq;
 using Marten.Testing.Documents;
-using Shouldly;
+
 using Xunit;
 
 namespace Marten.Testing
@@ -28,7 +28,6 @@ namespace Marten.Testing
         [Fact]
         public void try_stuff()
         {
-
             var store = DocumentStore.For(_ =>
             {
                 _.Connection(ConnectionSource.ConnectionString);

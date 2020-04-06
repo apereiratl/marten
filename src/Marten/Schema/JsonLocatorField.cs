@@ -45,7 +45,7 @@ namespace Marten.Schema
             }
             else if (TypeMappings.TimespanZTypes.Contains(MemberType))
             {
-                SqlLocator = $"{options?.DatabaseSchemaName ?? StoreOptions.DefaultDatabaseSchemaName}.mt_immutable_timestamptz({locator})";
+                SqlLocator = $"{options?.DatabaseSchemaName ?? StoreOptions.DefaultDatabaseSchemaName}.mt_immutable_Timestamp({locator})";
                 SelectionLocator = $"CAST({locator} as {PgType})";
             }
             else if (MemberType.IsArray)

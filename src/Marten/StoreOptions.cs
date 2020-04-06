@@ -9,7 +9,7 @@ using Marten.Schema.Identity.Sequences;
 using Marten.Services;
 using Marten.Storage;
 using Marten.Transforms;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 
 namespace Marten
 {
@@ -194,11 +194,11 @@ namespace Marten
         }
 
         /// <summary>
-        ///     Supply a mechanism for resolving an NpgsqlConnection object to
+        ///     Supply a mechanism for resolving an SqlConnection object to
         ///     the Postgresql database
         /// </summary>
         /// <param name="source"></param>
-        public void Connection(Func<NpgsqlConnection> source)
+        public void Connection(Func<SqlConnection> source)
         {
             Tenancy = new DefaultTenancy(new LambdaConnectionFactory(source), this);
         }

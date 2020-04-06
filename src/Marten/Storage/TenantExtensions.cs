@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data.Common;
 using Baseline;
 using Marten.Util;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 
 namespace Marten.Storage
 {
@@ -27,7 +27,7 @@ namespace Marten.Storage
             }
         }
 
-        private static T execute<T>(this ITenant tenant, Func<NpgsqlConnection, T> func)
+        private static T execute<T>(this ITenant tenant, Func<SqlConnection, T> func)
         {
             using (var conn = tenant.CreateConnection())
             {
@@ -45,7 +45,7 @@ namespace Marten.Storage
             }
         }
 
-        private static void execute(this ITenant tenant, Action<NpgsqlConnection> action)
+        private static void execute(this ITenant tenant, Action<SqlConnection> action)
         {
             using (var conn = tenant.CreateConnection())
             {

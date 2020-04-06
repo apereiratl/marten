@@ -3,18 +3,20 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
+
 using Baseline;
+
 using Marten.Schema;
 using Marten.Schema.Arguments;
 using Marten.Storage;
-using Npgsql;
-using NpgsqlTypes;
+
+using Microsoft.Data.SqlClient;
 
 namespace Marten.Util
 {
     public static class CommandExtensions
     {
-        public static void AddTenancy(this NpgsqlCommand command, ITenant tenant)
+        public static void AddTenancy(this SqlCommand command, ITenant tenant)
         {
             if (command.CommandText.Contains(":" + TenantIdArgument.ArgName))
             {
@@ -25,13 +27,13 @@ namespace Marten.Util
             }
         }
 
-        public static int RunSql(this NpgsqlConnection conn, params string[] sqls)
+        public static int RunSql(this SqlConnection conn, params string[] sqls)
         {
             var sql = sqls.Join(";");
             return conn.CreateCommand().Sql(sql).ExecuteNonQuery();
         }
 
-        public static IEnumerable<T> Fetch<T>(this NpgsqlCommand cmd, string sql, Func<DbDataReader, T> transform, params object[] parameters)
+        public static IEnumerable<T> Fetch<T>(this SqlCommand cmd, string sql, Func<DbDataReader, T> transform, params object[] parameters)
         {
             cmd.WithText(sql);
             parameters.Each(x =>
@@ -53,7 +55,7 @@ namespace Marten.Util
             return list;
         }
 
-        public static void AddParameters(this NpgsqlCommand command, object parameters)
+        public static void AddParameters(this SqlCommand command, object parameters)
         {
             if (parameters == null)
                 return;
@@ -70,7 +72,7 @@ namespace Marten.Util
             }
         }
 
-        public static NpgsqlParameter AddParameter(this NpgsqlCommand command, object value, NpgsqlDbType? dbType = null)
+        public static SqlParameter AddParameter(this SqlCommand command, object value, SqlDbType? dbType = null)
         {
             var name = "arg" + command.Parameters.Count;
 
@@ -80,7 +82,7 @@ namespace Marten.Util
 
             if (dbType.HasValue)
             {
-                parameter.NpgsqlDbType = dbType.Value;
+                parameter.SqlDbType = dbType.Value;
             }
 
             command.Parameters.Add(parameter);
@@ -88,7 +90,7 @@ namespace Marten.Util
             return parameter;
         }
 
-        public static NpgsqlParameter AddNamedParameter(this NpgsqlCommand command, string name, object value)
+        public static SqlParameter AddNamedParameter(this SqlCommand command, string name, object value)
         {
             var parameter = command.CreateParameter();
             parameter.ParameterName = name;
@@ -98,7 +100,7 @@ namespace Marten.Util
             return parameter;
         }
 
-        public static NpgsqlCommand With(this NpgsqlCommand command, string name, object value)
+        public static SqlCommand With(this SqlCommand command, string name, object value)
         {
             var parameter = command.CreateParameter();
             parameter.ParameterName = name;
@@ -108,38 +110,38 @@ namespace Marten.Util
             return command;
         }
 
-        public static NpgsqlCommand With(this NpgsqlCommand command, string name, object value, NpgsqlDbType dbType)
+        public static SqlCommand With(this SqlCommand command, string name, object value, SqlDbType dbType)
         {
             var parameter = command.CreateParameter();
             parameter.ParameterName = name;
             parameter.Value = value ?? DBNull.Value;
-            parameter.NpgsqlDbType = dbType;
+            parameter.SqlDbType = dbType;
             command.Parameters.Add(parameter);
 
             return command;
         }
 
-        public static NpgsqlCommand AsSproc(this NpgsqlCommand command)
+        public static SqlCommand AsSproc(this SqlCommand command)
         {
             command.CommandType = CommandType.StoredProcedure;
 
             return command;
         }
 
-        public static NpgsqlCommand WithJsonParameter(this NpgsqlCommand command, string name, string json)
+        public static SqlCommand WithJsonParameter(this SqlCommand command, string name, string json)
         {
-            command.Parameters.Add(name, NpgsqlDbType.Jsonb).Value = json;
+            command.Parameters.Add(name, SqlDbType.NVarChar).Value = json;
 
             return command;
         }
 
-        public static NpgsqlCommand Sql(this NpgsqlCommand cmd, string sql)
+        public static SqlCommand Sql(this SqlCommand cmd, string sql)
         {
             cmd.CommandText = sql;
             return cmd;
         }
 
-        public static NpgsqlCommand CallsSproc(this NpgsqlCommand cmd, DbObjectName function)
+        public static SqlCommand CallsSproc(this SqlCommand cmd, DbObjectName function)
         {
             if (cmd == null)
                 throw new ArgumentNullException(nameof(cmd));
@@ -152,21 +154,21 @@ namespace Marten.Util
             return cmd;
         }
 
-        public static NpgsqlCommand Returns(this NpgsqlCommand command, string name, NpgsqlDbType type)
+        public static SqlCommand Returns(this SqlCommand command, string name, SqlDbType type)
         {
             var parameter = command.AddParameter(name);
-            parameter.NpgsqlDbType = type;
+            parameter.SqlDbType = type;
             parameter.Direction = ParameterDirection.ReturnValue;
             return command;
         }
 
-        public static NpgsqlCommand WithText(this NpgsqlCommand command, string sql)
+        public static SqlCommand WithText(this SqlCommand command, string sql)
         {
             command.CommandText = sql;
             return command;
         }
 
-        public static NpgsqlCommand CreateCommand(this NpgsqlConnection conn, string command)
+        public static SqlCommand CreateCommand(this SqlConnection conn, string command)
         {
             var cmd = conn.CreateCommand();
             cmd.CommandText = command;

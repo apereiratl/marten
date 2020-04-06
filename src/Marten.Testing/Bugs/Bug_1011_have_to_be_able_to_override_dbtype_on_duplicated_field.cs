@@ -1,12 +1,14 @@
 using System;
 using System.Linq;
 using Marten.Schema;
-using NpgsqlTypes;
+
 using Shouldly;
 using Xunit;
 
 namespace Marten.Testing.Bugs
 {
+    using System.Data;
+
     public class Bug_1011_have_to_be_able_to_override_dbtype_on_duplicated_field: IntegratedFixture
     {
         [Fact]
@@ -15,13 +17,13 @@ namespace Marten.Testing.Bugs
             StoreOptions(_ =>
                 {
                     _.Schema.For<DocWithDateTimeField>().Duplicate(x => x.Date, pgType: "timestamp without time zone",
-                        dbType: NpgsqlDbType.Timestamp);
+                        dbType: SqlDbType.Timestamp);
                 });
 
             var field = theStore.Storage.MappingFor(typeof(DocWithDateTimeField))
                 .DuplicatedFields.Single();
 
-            field.DbType.ShouldBe(NpgsqlDbType.Timestamp);
+            field.DbType.ShouldBe(SqlDbType.Timestamp);
             field.PgType.ShouldBe("timestamp without time zone");
         }
 
@@ -31,13 +33,13 @@ namespace Marten.Testing.Bugs
             StoreOptions(_ =>
             {
                 _.Schema.For<DocWithDateTimeField>().Duplicate(x => x.Date, pgType: "timestamp without time zone",
-                    dbType: NpgsqlDbType.Timestamp);
+                    dbType: SqlDbType.Timestamp);
             });
 
             var field = theStore.Storage.MappingFor(typeof(DocWithDateTimeField))
                 .DuplicatedFields.Single();
 
-            field.DbType.ShouldBe(NpgsqlDbType.Timestamp);
+            field.DbType.ShouldBe(SqlDbType.Timestamp);
             field.PgType.ShouldBe("timestamp without time zone");
         }
 
@@ -51,7 +53,7 @@ namespace Marten.Testing.Bugs
         {
             public Guid Id { get; set; }
 
-            [DuplicateField(DbType = NpgsqlDbType.Timestamp, PgType = "timestamp without time zone")]
+            [DuplicateField(DbType = SqlDbType.Timestamp, PgType = "timestamp without time zone")]
             public DateTime Date { get; set; }
         }
     }

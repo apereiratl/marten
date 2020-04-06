@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Marten.Services;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 using Shouldly;
 using Xunit;
 
@@ -43,12 +43,12 @@ namespace Marten.Testing
     {
         public readonly IList<IChangeSet> Commits = new List<IChangeSet>();
 
-        public void LogSuccess(NpgsqlCommand command)
+        public void LogSuccess(SqlCommand command)
         {
             
         }
 
-        public void LogFailure(NpgsqlCommand command, Exception ex)
+        public void LogFailure(SqlCommand command, Exception ex)
         {
         }
 

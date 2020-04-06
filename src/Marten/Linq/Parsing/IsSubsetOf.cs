@@ -4,7 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using Marten.Schema;
-using NpgsqlTypes;
+using System.Data;
 
 namespace Marten.Linq.Parsing
 {
@@ -39,7 +39,7 @@ namespace Marten.Linq.Parsing
             object values = expression.Arguments.Last().Value();
 
             string json = serializer.ToJson(values);
-            return new CustomizableWhereFragment($"{locator} <@ ?", "?", Tuple.Create<object, NpgsqlDbType?>(json, NpgsqlDbType.Jsonb));
+            return new CustomizableWhereFragment($"{locator} <@ ?", "?", Tuple.Create<object, SqlDbType?>(json, SqlDbType.NVarChar));
         }
     }
 }

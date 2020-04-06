@@ -1,12 +1,12 @@
 using Marten.Util;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 
 namespace Marten.Linq.Compiled
 {
     public interface IDbParameterSetter
     {
-        NpgsqlParameter AddParameter(object query, CommandBuilder command);
+        SqlParameter AddParameter(object query, CommandBuilder command);
 
-        void ReplaceValue(NpgsqlParameter cmdParameter);
+        void ReplaceValue(SqlParameter cmdParameter);
     }
 }

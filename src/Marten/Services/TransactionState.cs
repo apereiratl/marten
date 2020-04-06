@@ -2,7 +2,7 @@ using System;
 using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 
 namespace Marten.Services
 {
@@ -13,14 +13,14 @@ namespace Marten.Services
         private readonly int _commandTimeout;
         private readonly bool _ownsConnection;
 
-        public TransactionState(CommandRunnerMode mode, IsolationLevel isolationLevel, int? commandTimeout, NpgsqlConnection connection, bool ownsConnection, NpgsqlTransaction transaction = null)
+        public TransactionState(CommandRunnerMode mode, IsolationLevel isolationLevel, int? commandTimeout, SqlConnection connection, bool ownsConnection, SqlTransaction transaction = null)
         {
             _mode = mode;
             _isolationLevel = isolationLevel;
             _ownsConnection = ownsConnection;
             Transaction = transaction;
             Connection = connection;
-            _commandTimeout = commandTimeout ?? Connection.CommandTimeout;
+            _commandTimeout = commandTimeout.GetValueOrDefault();
         }
 
         public TransactionState(IConnectionFactory factory, CommandRunnerMode mode, IsolationLevel isolationLevel, int? commandTimeout, bool ownsConnection)
@@ -29,7 +29,7 @@ namespace Marten.Services
             _isolationLevel = isolationLevel;
             _ownsConnection = ownsConnection;
             Connection = factory.Create();
-            _commandTimeout = commandTimeout ?? Connection.CommandTimeout;
+            _commandTimeout = commandTimeout.GetValueOrDefault();
         }
 
         public bool IsOpen => Connection.State != ConnectionState.Closed;
@@ -67,7 +67,7 @@ namespace Marten.Services
 
             if (_mode == CommandRunnerMode.ReadOnly)
             {
-                using (var cmd = new NpgsqlCommand("SET TRANSACTION READ ONLY;"))
+                using (var cmd = new SqlCommand("SET TRANSACTION READ ONLY;"))
                 {
                     Apply(cmd);
                     cmd.ExecuteNonQuery();
@@ -75,7 +75,7 @@ namespace Marten.Services
             }
         }
 
-        public void Apply(NpgsqlCommand cmd)
+        public void Apply(SqlCommand cmd)
         {
             cmd.Connection = Connection;
             if (Transaction != null)
@@ -83,9 +83,9 @@ namespace Marten.Services
             cmd.CommandTimeout = _commandTimeout;
         }
 
-        public NpgsqlTransaction Transaction { get; private set; }
+        public SqlTransaction Transaction { get; private set; }
 
-        public NpgsqlConnection Connection { get; }
+        public SqlConnection Connection { get; }
 
         public void Commit()
         {
@@ -119,7 +119,7 @@ namespace Marten.Services
 
         public void Rollback()
         {
-            if (Transaction != null && !Transaction.IsCompleted && _mode != CommandRunnerMode.External)
+            if (Transaction != null && _mode != CommandRunnerMode.External)
             {
                 try
                 {
@@ -140,7 +140,7 @@ namespace Marten.Services
 
         public async Task RollbackAsync(CancellationToken token)
         {
-            if (Transaction != null && !Transaction.IsCompleted && _mode != CommandRunnerMode.External)
+            if (Transaction != null && _mode != CommandRunnerMode.External)
             {
                 try
                 {
@@ -174,7 +174,7 @@ namespace Marten.Services
             }
         }
 
-        public NpgsqlCommand CreateCommand()
+        public SqlCommand CreateCommand()
         {
             var cmd = Connection.CreateCommand();
             if (Transaction != null)

@@ -6,6 +6,8 @@ using Marten.Schema;
 
 namespace Marten.Linq.Parsing
 {
+    using System.Data;
+
     public class DictionaryExpressions: IMethodCallParser
     {
         private static bool IsCollectionContainsWithStringKey(MethodInfo m) =>
@@ -51,7 +53,7 @@ namespace Marten.Linq.Parsing
         {
             var key = (string)expression.Arguments[0].Value();
             // have to use different token here because we actually want the `?` character as the operator!
-            return new CustomizableWhereFragment($"{fieldLocator} ? @1", "@1", Tuple.Create<object, NpgsqlTypes.NpgsqlDbType?>(key, NpgsqlTypes.NpgsqlDbType.Text));
+            return new CustomizableWhereFragment($"{fieldLocator} ? @1", "@1", Tuple.Create<object, SqlDbType?>(key, SqlDbType.NVarChar));
         }
 
         private static IWhereFragment QueryFromICollectionContains(MethodCallExpression expression, string fieldPath, ISerializer serializer)
@@ -65,7 +67,7 @@ namespace Marten.Linq.Parsing
             var dict = dictType.GetConstructors()[0].Invoke(null);
             dictType.GetMethod("Add").Invoke(dict, new[] { key, value });
             var json = serializer.ToJson(dict);
-            return new CustomizableWhereFragment($"{fieldPath} @> ?", "?", Tuple.Create<object, NpgsqlTypes.NpgsqlDbType?>(json, NpgsqlTypes.NpgsqlDbType.Jsonb));
+            return new CustomizableWhereFragment($"{fieldPath} @> ?", "?", Tuple.Create<object, SqlDbType?>(json, SqlDbType.NVarChar));
         }
     }
 }

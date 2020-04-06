@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Marten.Schema;
 using Marten.Util;
-using NpgsqlTypes;
+using System.Data;
 
 namespace Marten.Services
 {
@@ -44,68 +44,68 @@ namespace Marten.Services
 
         public SprocCall Param(string argName, Guid value)
         {
-            return Param(argName, value, NpgsqlDbType.Uuid);
+            return Param(argName, value, SqlDbType.UniqueIdentifier);
         }
 
         public SprocCall Param(string argName, Guid[] values)
         {
-            return Param(argName, values, NpgsqlDbType.Uuid | NpgsqlDbType.Array);
+            return Param(argName, values, SqlDbType.UniqueIdentifier);
         }
 
         public SprocCall Param(string argName, string value)
         {
-            return Param(argName, value, NpgsqlDbType.Varchar);
+            return Param(argName, value, SqlDbType.VarChar);
         }
 
         public SprocCall Param(string argName, string[] values)
         {
-            return Param(argName, values, NpgsqlDbType.Varchar | NpgsqlDbType.Array);
+            return Param(argName, values, SqlDbType.VarChar);
         }
 
         public SprocCall JsonEntity(string argName, object value)
         {
             var json = _parent.Serializer.ToJson(value);
-            return Param(argName, json, NpgsqlDbType.Jsonb);
+            return Param(argName, json, SqlDbType.NVarChar);
         }
 
         public SprocCall JsonBody(string argName, string json)
         {
-            return Param(argName, json, NpgsqlDbType.Jsonb);
+            return Param(argName, json, SqlDbType.NVarChar);
         }
 
         public SprocCall JsonBodies(string argName, string[] bodies)
         {
-            return Param(argName, bodies, NpgsqlDbType.Jsonb | NpgsqlDbType.Array);
+            return Param(argName, bodies, SqlDbType.NVarChar);
         }
 
         public SprocCall JsonBodies(string argName, ArraySegment<char>[] bodies)
         {
-            return Param(argName, bodies, NpgsqlDbType.Jsonb | NpgsqlDbType.Array);
+            return Param(argName, bodies, SqlDbType.NVarChar);
         }
 
         public SprocCall JsonBody(string argName, ArraySegment<char> body)
         {
-            return Param(argName, body, NpgsqlDbType.Jsonb);
+            return Param(argName, body, SqlDbType.NVarChar);
         }
 
-        public SprocCall Param(string argName, object value, NpgsqlDbType dbType)
+        public SprocCall Param(string argName, object value, SqlDbType dbType)
         {
             if (value is Enum)
             {
                 if (_parent.Serializer.EnumStorage == EnumStorage.AsInteger)
                 {
                     value = (int)value;
-                    dbType = NpgsqlDbType.Integer;
+                    dbType = SqlDbType.Int;
                 }
                 else
                 {
                     value = value.ToString();
-                    dbType = NpgsqlDbType.Varchar;
+                    dbType = SqlDbType.VarChar;
                 }
             }
             else if (value is Guid)
             {
-                dbType = NpgsqlDbType.Uuid;
+                dbType = SqlDbType.UniqueIdentifier;
             }
 
             _parameters.Add(new ParameterArg(argName, value, dbType));
@@ -113,7 +113,7 @@ namespace Marten.Services
             return this;
         }
 
-        public SprocCall Param(string argName, object value, NpgsqlDbType dbType, int size)
+        public SprocCall Param(string argName, object value, SqlDbType dbType, int size)
         {
             _parameters.Add(new ParameterArg(argName, value, dbType, size));
 
@@ -124,10 +124,10 @@ namespace Marten.Services
         {
             private readonly string _argName;
             private readonly object _value;
-            private readonly NpgsqlDbType _dbType;
+            private readonly SqlDbType _dbType;
             private readonly int _size;
 
-            public ParameterArg(string argName, object value, NpgsqlDbType dbType, int size = 0)
+            public ParameterArg(string argName, object value, SqlDbType dbType, int size = 0)
             {
                 _argName = argName;
                 _value = value;

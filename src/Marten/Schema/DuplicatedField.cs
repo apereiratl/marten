@@ -7,7 +7,7 @@ using Marten.Linq;
 using Marten.Schema.Arguments;
 using Marten.Storage;
 using Marten.Util;
-using NpgsqlTypes;
+using System.Data;
 
 namespace Marten.Schema
 {
@@ -35,7 +35,7 @@ namespace Marten.Schema
             {
                 if (storeOptions.DuplicatedFieldEnumStorage == EnumStorage.AsString)
                 {
-                    DbType = NpgsqlDbType.Varchar;
+                    DbType = SqlDbType.VarChar;
                     PgType = "varchar";
 
                     _parseObject = expression =>
@@ -46,19 +46,19 @@ namespace Marten.Schema
                 }
                 else
                 {
-                    DbType = NpgsqlDbType.Integer;
+                    DbType = SqlDbType.Int;
                     PgType = "integer";
                 }
             }
             else if (MemberType.IsDateTime())
             {
                 PgType = this.useTimestampWithoutTimeZoneForDateTime ? "timestamp without time zone" : "timestamp with time zone";
-                DbType = this.useTimestampWithoutTimeZoneForDateTime ? NpgsqlDbType.Timestamp : NpgsqlDbType.TimestampTz;
+                DbType = this.useTimestampWithoutTimeZoneForDateTime ? SqlDbType.Timestamp : SqlDbType.Timestamp;
             }
             else if (MemberType == typeof(DateTimeOffset) || MemberType == typeof(DateTimeOffset?))
             {
                 PgType = "timestamp with time zone";
-                DbType = NpgsqlDbType.TimestampTz;
+                DbType = SqlDbType.Timestamp;
             }
             else
             {
@@ -70,7 +70,7 @@ namespace Marten.Schema
         /// Used to override the assigned DbType used by Npgsql when a parameter
         /// is used in a query against this column
         /// </summary>
-        public NpgsqlDbType DbType { get; set; }
+        public SqlDbType DbType { get; set; }
 
         public DuplicatedFieldRole Role { get; set; } = DuplicatedFieldRole.Search;
 
@@ -105,16 +105,8 @@ namespace Marten.Schema
         // TODO -- have this take in CommandBuilder
         public string UpdateSqlFragment()
         {
-            if ((DbType & NpgsqlDbType.Array) == NpgsqlDbType.Array && PgType != "jsonb")
-            {
-                var jsonField = new JsonLocatorField("data", _storeOptions, _enumStorage, Casing.Default, Members, "jsonb");
-                return $"{ColumnName} = CAST(ARRAY(SELECT jsonb_array_elements_text({jsonField.SqlLocator})) as {PgType})";
-            }
-            else
-            {
-                var jsonField = new JsonLocatorField("data", _storeOptions, _enumStorage, Casing.Default, Members, PgType);
-                return $"{ColumnName} = {jsonField.SqlLocator}";
-            }
+            var jsonField = new JsonLocatorField("data", _storeOptions, _enumStorage, Casing.Default, Members, PgType);
+            return $"{ColumnName} = {jsonField.SqlLocator}";
         }
 
         public object GetValue(Expression valueExpression)

@@ -4,18 +4,19 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Marten.Services;
 using Marten.Util;
-using Npgsql;
-using NpgsqlTypes;
+using System.Data;
 
 namespace Marten.Schema.Arguments
 {
     public class UpsertArgument
     {
-        protected static readonly MethodInfo writeMethod =
-            typeof(NpgsqlBinaryImporter).GetMethods().FirstOrDefault(x => x.Name == "Write" && x.GetParameters().Length == 2 && x.GetParameters()[0].ParameterType.IsGenericParameter && x.GetParameters()[1].ParameterType == typeof(NpgsqlTypes.NpgsqlDbType));
+        // todo: fix this.
+        //protected static readonly MethodInfo writeMethod =
+        //    typeof(NpgsqlBinaryImporter).GetMethods().FirstOrDefault(x => x.Name == "Write" && x.GetParameters().Length == 2 && x.GetParameters()[0].ParameterType.IsGenericParameter && x.GetParameters()[1].ParameterType == typeof(NpgsqlTypes.SqlDbType));
+        protected static readonly MethodInfo writeMethod = null;
 
         protected static readonly MethodInfo _paramMethod = typeof(SprocCall)
-            .GetMethod("Param", new[] { typeof(string), typeof(object), typeof(NpgsqlDbType) });
+            .GetMethod("Param", new[] { typeof(string), typeof(object), typeof(SqlDbType) });
 
         protected static readonly MethodInfo _paramWithJsonBody = typeof(SprocCall)
             .GetMethod("JsonBody", new[] { typeof(string), typeof(ArraySegment<char>) });
@@ -53,7 +54,7 @@ namespace Marten.Schema.Arguments
             }
         }
 
-        public NpgsqlDbType DbType { get; set; }
+        public SqlDbType DbType { get; set; }
 
         public string ArgumentDeclaration()
         {

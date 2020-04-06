@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using Marten.Linq;
 using Marten.Services;
 using Shouldly;
@@ -15,7 +15,7 @@ namespace Marten.Testing.Linq
             var cmd = theSession.Query<Target>().ToCommand(FetchType.FetchMany);
 
             cmd.CommandText.ShouldBe("select d.data, d.id, d.mt_version from public.mt_doc_target as d");
-            cmd.Parameters.Any().ShouldBeFalse();
+            cmd.Parameters.Count.ShouldBe(0);
         }
 
         [Fact]
@@ -88,7 +88,7 @@ namespace Marten.Testing.Linq
             var cmd = theSession.Query<Target>().ToCommand(FetchType.FetchMany);
 
             cmd.CommandText.ShouldBe("select d.data, d.id, d.mt_version from other.mt_doc_target as d");
-            cmd.Parameters.Any().ShouldBeFalse();
+            cmd.Parameters.Count.ShouldBe(0);
         }
 
         [Fact]

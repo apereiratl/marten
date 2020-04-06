@@ -6,7 +6,7 @@ using Marten.Schema;
 using Marten.Storage;
 using Marten.Testing.Documents;
 using Marten.Util;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 using Shouldly;
 using Xunit;
 
@@ -16,7 +16,7 @@ namespace Marten.Testing.Storage
     {
         public DocumentTableTester()
         {
-            _conn = new NpgsqlConnection(ConnectionSource.ConnectionString);
+            _conn = new SqlConnection(ConnectionSource.ConnectionString);
             _conn.Open();
 
             _conn.CreateCommand("drop schema if exists testbed cascade;create schema testbed")
@@ -33,7 +33,7 @@ namespace Marten.Testing.Storage
             _conn.Dispose();
         }
 
-        private readonly NpgsqlConnection _conn;
+        private readonly SqlConnection _conn;
         private readonly Lazy<DocumentTable> _table;
         private readonly DocumentMapping<User> theMapping;
 

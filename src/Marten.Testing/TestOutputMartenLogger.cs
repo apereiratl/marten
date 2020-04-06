@@ -1,5 +1,5 @@
-﻿using Marten.Services;
-using Npgsql;
+using Marten.Services;
+using Microsoft.Data.SqlClient;
 using System;
 using System.Linq;
 using Xunit.Abstractions;
@@ -29,20 +29,20 @@ namespace Marten.Testing
             _output.WriteLine(String.Empty);
         }
 
-        public void LogSuccess(NpgsqlCommand command)
+        public void LogSuccess(SqlCommand command)
         {
             _output.WriteLine(command.CommandText);
-            foreach (var p in command.Parameters.OfType<NpgsqlParameter>())
+            foreach (var p in command.Parameters.OfType<SqlParameter>())
             {
                 _output.WriteLine($"  {p.ParameterName}: {p.Value}");
             }
         }
 
-        public void LogFailure(NpgsqlCommand command, Exception ex)
+        public void LogFailure(SqlCommand command, Exception ex)
         {
             _output.WriteLine("Postgresql command failed!");
             _output.WriteLine(command.CommandText);
-            foreach (var p in command.Parameters.OfType<NpgsqlParameter>())
+            foreach (var p in command.Parameters.OfType<SqlParameter>())
             {
                 _output.WriteLine($"  {p.ParameterName}: {p.Value}");
             }

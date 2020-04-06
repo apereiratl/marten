@@ -1,6 +1,6 @@
 using System;
 using System.Linq.Expressions;
-using NpgsqlTypes;
+using System.Data;
 
 namespace Marten.Schema.Arguments
 {
@@ -10,7 +10,7 @@ namespace Marten.Schema.Arguments
         {
             Arg = "current_version";
             PostgresType = "uuid";
-            DbType = NpgsqlDbType.Uuid;
+            DbType = SqlDbType.UniqueIdentifier;
             Column = null;
         }
 

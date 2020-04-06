@@ -16,7 +16,7 @@ namespace Marten.Events
             AddColumn("version", "integer", "NOT NULL");
             AddColumn("data", "jsonb", "NOT NULL");
             AddColumn("type", "varchar(500)", "NOT NULL");
-            AddColumn("timestamp", "timestamptz", "default (now()) NOT NULL");
+            AddColumn("timestamp", "Timestamp", "default (now()) NOT NULL");
             AddColumn<TenantIdColumn>();
             AddColumn(new DotNetTypeColumn { Directive = "NULL" });
 

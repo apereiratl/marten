@@ -4,17 +4,18 @@ using System.Linq;
 using Marten.Schema;
 using Marten.Storage;
 using Marten.Util;
-using Npgsql;
-using NpgsqlTypes;
+using Microsoft.Data.SqlClient;
+
+using System.Data;
 
 namespace Marten.Services
 {
     public interface IBatchCommand
     {
-        NpgsqlParameter AddParameter(object value, NpgsqlDbType dbType);
+        SqlParameter AddParameter(object value, SqlDbType dbType);
 
         ISerializer Serializer { get; }
-        NpgsqlCommand Command { get; }
+        SqlCommand Command { get; }
     }
 
     public class BatchCommand: IBatchCommand
@@ -29,15 +30,15 @@ namespace Marten.Services
             Serializer = serializer;
         }
 
-        public NpgsqlCommand Command { get; } = new NpgsqlCommand();
+        public SqlCommand Command { get; } = new SqlCommand();
 
         public int Count => Calls.Count;
 
-        public NpgsqlParameter AddParameter(object value, NpgsqlDbType dbType)
+        public SqlParameter AddParameter(object value, SqlDbType dbType)
         {
             var name = "p" + _counter++;
             var param = Command.AddNamedParameter(name, value);
-            param.NpgsqlDbType = dbType;
+            param.SqlDbType = dbType;
 
             return param;
         }
@@ -47,7 +48,7 @@ namespace Marten.Services
 
         public IList<IStorageOperation> Calls { get; } = new List<IStorageOperation>();
 
-        public NpgsqlCommand BuildCommand()
+        public SqlCommand BuildCommand()
         {
             return CommandBuilder.ToBatchCommand(_tenant, Calls);
         }

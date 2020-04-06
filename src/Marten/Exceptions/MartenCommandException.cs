@@ -1,5 +1,5 @@
 using System;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 
 namespace Marten.Exceptions
 {
@@ -8,11 +8,11 @@ namespace Marten.Exceptions
     /// </summary>
     public class MartenCommandException: Marten.MartenCommandException
     {
-        public MartenCommandException(NpgsqlCommand command, Exception innerException) : base(command, innerException)
+        public MartenCommandException(SqlCommand command, Exception innerException) : base(command, innerException)
         {
         }
 
-        public MartenCommandException(NpgsqlCommand command, Exception innerException, string prefix) : base(command, innerException, prefix)
+        public MartenCommandException(SqlCommand command, Exception innerException, string prefix) : base(command, innerException, prefix)
         {
         }
     }

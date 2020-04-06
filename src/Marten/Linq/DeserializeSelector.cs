@@ -1,12 +1,16 @@
-using System.Data.Common;
-using System.Threading;
-using System.Threading.Tasks;
-using Baseline;
-using Marten.Services;
-using Npgsql;
-
 namespace Marten.Linq
 {
+    using System.Data.Common;
+    using System.IO;
+    using System.Threading;
+    using System.Threading.Tasks;
+
+    using Baseline;
+
+    using Marten.Services;
+
+    using Microsoft.Data.SqlClient;
+
     public class DeserializeSelector<T>: BasicSelector, ISelector<T>
     {
         private readonly ISerializer _serializer;
@@ -36,7 +40,7 @@ namespace Marten.Linq
         {
             if (!typeof(T).IsSimple())
             {
-                var json = await reader.As<NpgsqlDataReader>().GetTextReaderAsync(0).ConfigureAwait(false);
+                var json = await reader.As<SqlDataReader>().GetFieldValueAsync<TextReader>(0).ConfigureAwait(false);
                 return _serializer.FromJson<T>(json);
             }
 

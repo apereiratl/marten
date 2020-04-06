@@ -3,7 +3,7 @@ using System.Data.Common;
 using System.IO;
 using Marten.Schema;
 using Marten.Util;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 
 namespace Marten.Storage
 {
@@ -129,7 +129,7 @@ AND    n.nspname = :{schemaParam};
             writer.WriteLine(dropSql);
         }
 
-        public FunctionDelta FetchDelta(NpgsqlConnection conn, DdlRules rules)
+        public FunctionDelta FetchDelta(SqlConnection conn, DdlRules rules)
         {
             var cmd = conn.CreateCommand();
             var builder = new CommandBuilder(cmd);

@@ -1,17 +1,21 @@
-using System.Linq;
-using Baseline;
-using Marten.Linq;
-using Marten.Linq.SoftDeletes;
-using Marten.Schema;
-using Marten.Storage;
-using Marten.Testing;
-using Marten.Testing.Documents;
-using Npgsql;
-using StoryTeller;
-using StoryTeller.Grammars.Tables;
-
 namespace Marten.Storyteller.Fixtures
 {
+    using System.Linq;
+
+    using Baseline;
+
+    using Marten.Linq;
+    using Marten.Linq.SoftDeletes;
+    using Marten.Schema;
+    using Marten.Storage;
+    using Marten.Testing;
+    using Marten.Testing.Documents;
+
+    using Microsoft.Data.SqlClient;
+
+    using StoryTeller;
+    using StoryTeller.Grammars.Tables;
+
     public class DocumentFilteringFixture: Fixture
     {
         public DocumentFilteringFixture()
@@ -63,9 +67,7 @@ namespace Marten.Storyteller.Fixtures
             [Header("User Supplied Where"), SelectionValues("x => x.UserName == \"Aubrey\"", "x => x.MaybeDeleted()")]string baseWhere,
             [Header("Soft Deleted")] bool softDeleted,
             [Header("Tenancy")] TenancyStyle tenancy,
-            [Header("User")]out string user, [Header("AdminUser")]out string subclass
-
-            )
+            [Header("User")]out string user, [Header("AdminUser")]out string subclass)
         {
             var store = buildStore(softDeleted, tenancy);
 
@@ -93,7 +95,7 @@ namespace Marten.Storyteller.Fixtures
             }
         }
 
-        private string extractWhereClause(NpgsqlCommand cmd)
+        private string extractWhereClause(SqlCommand cmd)
         {
             var index = cmd.CommandText.ToLower().IndexOf("where");
             return cmd.CommandText.Substring(index + 5).Trim();

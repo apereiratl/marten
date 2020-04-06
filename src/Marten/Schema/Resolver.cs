@@ -12,11 +12,13 @@ using Marten.Services;
 using Marten.Services.Deletes;
 using Marten.Storage;
 using Marten.Util;
-using Npgsql;
-using NpgsqlTypes;
+using Microsoft.Data.SqlClient;
 
 namespace Marten.Schema
 {
+    using System.Data;
+    using System.IO;
+
     public class DocumentStorage<T>: IDocumentStorage<T> where T : class
     {
         private readonly Func<T, object> _identity;
@@ -108,7 +110,7 @@ namespace Marten.Schema
 
         public TenancyStyle TenancyStyle => _mapping.TenancyStyle;
         public Type DocumentType => _mapping.DocumentType;
-        public NpgsqlDbType IdType { get; }
+        public SqlDbType IdType { get; }
 
         public virtual T Resolve(int startingIndex, DbDataReader reader, IIdentityMap map)
         {
@@ -135,7 +137,7 @@ namespace Marten.Schema
 
             var version = await reader.GetFieldValueAsync<Guid>(startingIndex + 2, token).ConfigureAwait(false);
 
-            using (var json = await reader.As<NpgsqlDataReader>().GetTextReaderAsync(startingIndex).ConfigureAwait(false))
+            using (var json = await reader.As<SqlDataReader>().GetFieldValueAsync<TextReader>(startingIndex).ConfigureAwait(false))
             {
                 return map.Get<T>(id, json, version);
             }
@@ -196,21 +198,21 @@ namespace Marten.Schema
 
             var version = await reader.GetFieldValueAsync<Guid>(2, token).ConfigureAwait(false);
 
-            var json = await reader.As<NpgsqlDataReader>().GetTextReaderAsync(0).ConfigureAwait(false);
+            var json = await reader.As<SqlDataReader>().GetFieldValueAsync<TextReader>(0).ConfigureAwait(false);
 
             return map.Get<T>(id, json, version);
         }
 
-        public NpgsqlCommand LoaderCommand(object id)
+        public SqlCommand LoaderCommand(object id)
         {
-            return new NpgsqlCommand(_loaderSql).With("id", id);
+            return new SqlCommand(_loaderSql).With("id", id);
         }
 
-        public NpgsqlCommand LoadByArrayCommand<TKey>(TKey[] ids)
+        public SqlCommand LoadByArrayCommand<TKey>(TKey[] ids)
         {
             var sql = _loadArraySql;
 
-            return new NpgsqlCommand(sql).With("ids", ids);
+            return new SqlCommand(sql).With("ids", ids);
         }
 
         public object Identity(object document)

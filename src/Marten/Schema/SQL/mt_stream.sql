@@ -5,7 +5,7 @@ CREATE TABLE {databaseSchema}.mt_streams (
 	id					uuid CONSTRAINT pk_mt_streams PRIMARY KEY,
 	type				varchar(100) NULL,
 	version				integer NOT NULL,
-	timestamp			timestamptz default (now()) NOT NULL,
+	timestamp			Timestamp default (now()) NOT NULL,
 	snapshot			jsonb,
 	snapshot_version	integer	
 );
@@ -21,7 +21,7 @@ CREATE TABLE {databaseSchema}.mt_events (
 	version		integer NOT NULL,
 	data		jsonb NOT NULL,
 	type 		varchar(100) NOT NULL,
-	timestamp	timestamptz default (now()) NOT NULL,
+	timestamp	Timestamp default (now()) NOT NULL,
 	CONSTRAINT pk_mt_events_stream_and_version UNIQUE(stream_id, version),
 	CONSTRAINT pk_mt_events_id_unique UNIQUE(id)
 );

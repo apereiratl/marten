@@ -158,7 +158,7 @@ namespace Marten.Storage
         internal void PostProcessConfiguration()
         {
             SystemFunctions.AddSystemFunction(_options, "mt_immutable_timestamp", "text");
-            SystemFunctions.AddSystemFunction(_options, "mt_immutable_timestamptz", "text");
+            SystemFunctions.AddSystemFunction(_options, "mt_immutable_Timestamp", "text");
             SystemFunctions.AddSystemFunction(_options, "mt_grams_vector", "text");
             SystemFunctions.AddSystemFunction(_options, "mt_grams_query", "text");
             SystemFunctions.AddSystemFunction(_options, "mt_grams_array", "text");

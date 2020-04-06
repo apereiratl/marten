@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Baseline;
 using Marten.Linq.Compiled;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 
 namespace Marten.Linq.QueryHandlers
 {
@@ -12,7 +12,7 @@ namespace Marten.Linq.QueryHandlers
 
         public IList<IDbParameterSetter> ParameterSetters { get; set; }
 
-        public NpgsqlCommand Command { get; set; }
+        public SqlCommand Command { get; set; }
 
         public IQueryStatisticsFinder StatisticsFinder { get; set; }
 

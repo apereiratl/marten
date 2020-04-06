@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Baseline.Reflection;
 using Marten.Services;
-using NpgsqlTypes;
+using System.Data;
 
 namespace Marten.Schema.Arguments
 {
@@ -21,7 +21,7 @@ namespace Marten.Schema.Arguments
         {
             Arg = "doc";
             PostgresType = "JSONB";
-            DbType = NpgsqlDbType.Jsonb;
+            DbType = SqlDbType.NVarChar;
             Column = "data";
         }
 
@@ -29,7 +29,7 @@ namespace Marten.Schema.Arguments
         {
             var argName = Expression.Constant(Arg);
             var serializer = Expression.Call(updateBatch, _serializer);
-            var jsonb = Expression.Constant(NpgsqlDbType.Jsonb);
+            var jsonb = Expression.Constant(SqlDbType.NVarChar);
 
             if (useCharBufferPooling == false)
             {

@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Marten.Services.Includes;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 using Shouldly;
 using Xunit;
 
@@ -36,7 +36,7 @@ namespace Marten.Testing.Bugs
 
             using (var session = theStore.OpenSession())
             {
-                var cmd = new NpgsqlCommand(@"
+                var cmd = new SqlCommand(@"
                     DROP CAST IF EXISTS (text AS cust_type);
                     DROP CAST IF EXISTS (cust_type AS text);
                     DROP OPERATOR CLASS IF EXISTS cust_type_ops USING btree;

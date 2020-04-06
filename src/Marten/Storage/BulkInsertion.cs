@@ -6,7 +6,7 @@ using Baseline;
 using Marten.Schema.BulkLoading;
 using Marten.Services;
 using Marten.Util;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 
 namespace Marten.Storage
 {
@@ -84,7 +84,7 @@ namespace Marten.Storage
 
         internal interface IBulkInserter
         {
-            void BulkInsert(int batchSize, NpgsqlConnection connection, BulkInsertion parent, BulkInsertMode mode);
+            void BulkInsert(int batchSize, SqlConnection connection, BulkInsertion parent, BulkInsertMode mode);
         }
 
         internal class BulkInserter<T>: IBulkInserter
@@ -96,13 +96,13 @@ namespace Marten.Storage
                 _documents = documents.OfType<T>().ToArray();
             }
 
-            public void BulkInsert(int batchSize, NpgsqlConnection connection, BulkInsertion parent, BulkInsertMode mode)
+            public void BulkInsert(int batchSize, SqlConnection connection, BulkInsertion parent, BulkInsertMode mode)
             {
                 parent.bulkInsertDocuments(_documents, batchSize, connection, mode);
             }
         }
 
-        private void bulkInsertDocuments<T>(IReadOnlyCollection<T> documents, int batchSize, NpgsqlConnection conn, BulkInsertMode mode)
+        private void bulkInsertDocuments<T>(IReadOnlyCollection<T> documents, int batchSize, SqlConnection conn, BulkInsertMode mode)
         {
             var loader = _tenant.BulkLoaderFor<T>();
 
@@ -154,7 +154,7 @@ namespace Marten.Storage
             }
         }
 
-        private void loadDocuments<T>(IEnumerable<T> documents, IBulkLoader<T> loader, BulkInsertMode mode, NpgsqlConnection conn, CharArrayTextWriter writer)
+        private void loadDocuments<T>(IEnumerable<T> documents, IBulkLoader<T> loader, BulkInsertMode mode, SqlConnection conn, CharArrayTextWriter writer)
         {
             if (mode == BulkInsertMode.InsertsOnly)
             {

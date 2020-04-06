@@ -1,18 +1,21 @@
-using System;
-using System.Data;
-using System.Threading;
-using System.Threading.Tasks;
-using Baseline;
-using Marten.Schema;
-using Marten.Schema.BulkLoading;
-using Marten.Schema.Identity;
-using Marten.Schema.Identity.Sequences;
-using Marten.Services;
-using Marten.Transforms;
-using Npgsql;
-
 namespace Marten.Storage
 {
+    using System;
+    using System.Data;
+    using System.Threading;
+    using System.Threading.Tasks;
+
+    using Baseline;
+
+    using Marten.Schema;
+    using Marten.Schema.BulkLoading;
+    using Marten.Schema.Identity;
+    using Marten.Schema.Identity.Sequences;
+    using Marten.Services;
+    using Marten.Transforms;
+
+    using Microsoft.Data.SqlClient;
+
     public class DefaultTenancy: Tenancy, ITenancy
     {
         public DefaultTenancy(IConnectionFactory factory, StoreOptions options) : base(options)
@@ -133,7 +136,7 @@ namespace Marten.Storage
             }
         }
 
-        public NpgsqlConnection CreateConnection()
+        public SqlConnection CreateConnection()
         {
             return _inner.CreateConnection();
         }

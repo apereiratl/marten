@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Data.Common;
 using Baseline;
 using Marten.Util;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 
 namespace Marten
 {
     /// <summary>
-    /// Factory interface to customize the construction of an NpgsqlConnection
+    /// Factory interface to customize the construction of an SqlConnection
     /// to the Postgresql database
     /// </summary>
     public interface IConnectionFactory
@@ -17,7 +17,7 @@ namespace Marten
         /// Create a new, isolated connection to the Postgresql database
         /// </summary>
         /// <returns></returns>
-        NpgsqlConnection Create();
+        SqlConnection Create();
     }
 
     public static class ConnectionFactoryExtensions
@@ -40,7 +40,7 @@ namespace Marten
             }
         }
 
-        private static T execute<T>(this IConnectionFactory factory, Func<NpgsqlConnection, T> func)
+        private static T execute<T>(this IConnectionFactory factory, Func<SqlConnection, T> func)
         {
             using (var conn = factory.Create())
             {
@@ -58,7 +58,7 @@ namespace Marten
             }
         }
 
-        private static void execute(this IConnectionFactory factory, Action<NpgsqlConnection> action)
+        private static void execute(this IConnectionFactory factory, Action<SqlConnection> action)
         {
             using (var conn = factory.Create())
             {

@@ -12,8 +12,8 @@ using Marten.Services.Includes;
 using Marten.Storage;
 using Marten.Transforms;
 using Marten.Util;
-using Npgsql;
 using Remotion.Linq;
+using Microsoft.Data.SqlClient;
 
 namespace Marten.Linq
 {
@@ -211,7 +211,7 @@ namespace Marten.Linq
             throw new ArgumentOutOfRangeException(nameof(fetchType));
         }
 
-        public NpgsqlCommand BuildCommand(FetchType fetchType)
+        public SqlCommand BuildCommand(FetchType fetchType)
         {
             var handler = toDiagnosticHandler(fetchType);
 

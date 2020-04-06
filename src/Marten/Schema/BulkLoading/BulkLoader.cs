@@ -8,10 +8,14 @@ using Marten.Schema.Identity;
 using Marten.Services;
 using Marten.Storage;
 using Marten.Util;
-using Npgsql;
+
 
 namespace Marten.Schema.BulkLoading
 {
+    using Marten.SQL;
+
+    using Microsoft.Data.SqlClient;
+
     public class BulkLoader<T>: IBulkLoader<T>
     {
         private readonly IdAssignment<T> _assignment;
@@ -19,7 +23,7 @@ namespace Marten.Schema.BulkLoading
         private readonly DocumentMapping _mapping;
         private readonly string _sql;
 
-        private readonly Action<T, string, ISerializer, NpgsqlBinaryImporter, CharArrayTextWriter, string> _transferData;
+        private readonly Action<T, string, ISerializer, SqlBinaryImporter, CharArrayTextWriter, string> _transferData;
         private readonly string _tempTableName;
 
         public BulkLoader(ISerializer serializer, DocumentMapping mapping, IdAssignment<T> assignment)
@@ -30,7 +34,7 @@ namespace Marten.Schema.BulkLoading
 
             _tempTableName = mapping.Table.Name + "_temp";
 
-            var writer = Expression.Parameter(typeof(NpgsqlBinaryImporter), "writer");
+            var writer = Expression.Parameter(typeof(SqlBinaryImporter), "writer");
             var document = Expression.Parameter(typeof(T), "document");
             var alias = Expression.Parameter(typeof(string), "alias");
             var serializerParam = Expression.Parameter(typeof(ISerializer), "serializer");
@@ -48,24 +52,24 @@ namespace Marten.Schema.BulkLoading
 
             var block = Expression.Block(expressions);
 
-            var lambda = Expression.Lambda<Action<T, string, ISerializer, NpgsqlBinaryImporter, CharArrayTextWriter, string>>(block, document, alias,
+            var lambda = Expression.Lambda<Action<T, string, ISerializer, SqlBinaryImporter, CharArrayTextWriter, string>>(block, document, alias,
                 serializerParam, writer, textWriter, tenantId);
 
-            _transferData = ExpressionCompiler.Compile<Action<T, string, ISerializer, NpgsqlBinaryImporter, CharArrayTextWriter, string>>(lambda);
+            _transferData = ExpressionCompiler.Compile<Action<T, string, ISerializer, SqlBinaryImporter, CharArrayTextWriter, string>>(lambda);
         }
 
-        public void Load(ITenant tenant, ISerializer serializer, NpgsqlConnection conn, IEnumerable<T> documents, CharArrayTextWriter textWriter)
+        public void Load(ITenant tenant, ISerializer serializer, SqlConnection conn, IEnumerable<T> documents, CharArrayTextWriter textWriter)
         {
             load(tenant, serializer, conn, documents, _sql, textWriter);
         }
 
-        public void Load(ITenant tenant, DbObjectName table, ISerializer serializer, NpgsqlConnection conn, IEnumerable<T> documents, CharArrayTextWriter textWriter)
+        public void Load(ITenant tenant, DbObjectName table, ISerializer serializer, SqlConnection conn, IEnumerable<T> documents, CharArrayTextWriter textWriter)
         {
             var sql = _baseSql.Replace("%TABLE%", table.QualifiedName);
             load(tenant, serializer, conn, documents, sql, textWriter);
         }
 
-        public void LoadIntoTempTable(ITenant tenant, ISerializer serializer, NpgsqlConnection conn, IEnumerable<T> documents, CharArrayTextWriter textWriter)
+        public void LoadIntoTempTable(ITenant tenant, ISerializer serializer, SqlConnection conn, IEnumerable<T> documents, CharArrayTextWriter textWriter)
         {
             var sql = _baseSql.Replace("%TABLE%", _tempTableName);
             load(tenant, serializer, conn, documents, sql, textWriter);
@@ -103,23 +107,24 @@ namespace Marten.Schema.BulkLoading
 
         public DbObjectName StorageTable => _mapping.Table;
 
-        private void load(ITenant tenant, ISerializer serializer, NpgsqlConnection conn, IEnumerable<T> documents, string sql, CharArrayTextWriter textWriter)
+        private void load(ITenant tenant, ISerializer serializer, SqlConnection conn, IEnumerable<T> documents, string sql, CharArrayTextWriter textWriter)
         {
-            using (var writer = conn.BeginBinaryImport(sql))
-            {
-                foreach (var document in documents)
-                {
-                    var assigned = false;
-                    _assignment.Assign(tenant, document, out assigned);
+            // todo: let's see if we can actually implement this.
+            //using (var writer = conn.BeginBinaryImport(sql))
+            //{
+            //    foreach (var document in documents)
+            //    {
+            //        var assigned = false;
+            //        _assignment.Assign(tenant, document, out assigned);
 
-                    writer.StartRow();
+            //        writer.StartRow();
 
-                    _transferData(document, _mapping.AliasFor(document.GetType()), serializer, writer, textWriter, tenant.TenantId);
-                    textWriter.Clear();
-                }
+            //        _transferData(document, _mapping.AliasFor(document.GetType()), serializer, writer, textWriter, tenant.TenantId);
+            //        textWriter.Clear();
+            //    }
 
-                writer.Complete();
-            }
+            //    writer.Complete();
+            //}
         }
     }
 }

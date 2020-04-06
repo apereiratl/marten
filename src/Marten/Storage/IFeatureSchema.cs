@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using Marten.Exceptions;
 using Marten.Util;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 
 namespace Marten.Storage
 {
@@ -134,7 +134,7 @@ namespace Marten.Storage
             }
         }
 
-        public static void RemoveAllObjects(this IFeatureSchema schema, DdlRules rules, NpgsqlConnection conn)
+        public static void RemoveAllObjects(this IFeatureSchema schema, DdlRules rules, SqlConnection conn)
         {
             var writer = new StringWriter();
             schema.WriteDropStatements(rules, writer);

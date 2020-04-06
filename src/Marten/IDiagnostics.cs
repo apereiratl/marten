@@ -1,6 +1,6 @@
 using System;
 using Marten.Linq;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 
 namespace Marten
 {
@@ -14,7 +14,7 @@ namespace Marten
         /// <typeparam name="TReturn"></typeparam>
         /// <param name="query"></param>
         /// <returns></returns>
-        NpgsqlCommand PreviewCommand<TDoc, TReturn>(ICompiledQuery<TDoc, TReturn> query);
+        SqlCommand PreviewCommand<TDoc, TReturn>(ICompiledQuery<TDoc, TReturn> query);
 
         /// <summary>
         /// Find the Postgresql EXPLAIN PLAN for this compiled query

@@ -7,7 +7,7 @@ using Baseline;
 using Marten.Exceptions;
 using Marten.Storage;
 using Marten.Util;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 
 namespace Marten.Schema
 {
@@ -167,7 +167,7 @@ namespace Marten.Schema
             }
         }
 
-        public void Apply(NpgsqlConnection conn, AutoCreate autoCreate, ISchemaObject[] schemaObjects)
+        public void Apply(SqlConnection conn, AutoCreate autoCreate, ISchemaObject[] schemaObjects)
         {
             if (!schemaObjects.Any())
                 return;
@@ -213,7 +213,7 @@ namespace Marten.Schema
             Migrations.Add(new ObjectMigration(schemaObject, difference));
         }
 
-        public void Apply(NpgsqlConnection connection, AutoCreate autoCreate, ISchemaObject schemaObject)
+        public void Apply(SqlConnection connection, AutoCreate autoCreate, ISchemaObject schemaObject)
         {
             Apply(connection, autoCreate, new ISchemaObject[] { schemaObject });
         }

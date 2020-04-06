@@ -9,7 +9,7 @@ using Marten.Schema.Identity.Sequences;
 using Marten.Storage;
 using Marten.Testing.Documents;
 using Marten.Testing.Schema.Hierarchies;
-using NpgsqlTypes;
+using System.Data;
 using Shouldly;
 using Xunit;
 
@@ -265,9 +265,9 @@ namespace Marten.Testing.Schema
         }
 
         [Theory]
-        [InlineData(EnumStorage.AsInteger, NpgsqlDbType.Integer)]
-        [InlineData(EnumStorage.AsString, NpgsqlDbType.Varchar)]
-        public void duplicated_field_enum_storage_should_be_taken_from_store_options_enum_storage_by_default(EnumStorage enumStorage, NpgsqlDbType expectedNpgsqlDbType)
+        [InlineData(EnumStorage.AsInteger, SqlDbType.Int)]
+        [InlineData(EnumStorage.AsString, SqlDbType.VarChar)]
+        public void duplicated_field_enum_storage_should_be_taken_from_store_options_enum_storage_by_default(EnumStorage enumStorage, SqlDbType expectedSqlDbType)
         {
             var storeOptions = new StoreOptions();
             storeOptions.UseDefaultSerialization(enumStorage);
@@ -275,13 +275,13 @@ namespace Marten.Testing.Schema
             var mapping = new DocumentMapping<Target>(storeOptions);
 
             var duplicatedField = mapping.DuplicateField(nameof(Target.Color));
-            duplicatedField.DbType.ShouldBe(expectedNpgsqlDbType);
+            duplicatedField.DbType.ShouldBe(expectedSqlDbType);
         }
 
         [Theory]
-        [InlineData(EnumStorage.AsInteger, NpgsqlDbType.Integer)]
-        [InlineData(EnumStorage.AsString, NpgsqlDbType.Varchar)]
-        public void duplicated_field_enum_storage_should_be_taken_from_store_options_duplicated_field_enum_storage_when_it_was_changed(EnumStorage enumStorage, NpgsqlDbType expectedNpgsqlDbType)
+        [InlineData(EnumStorage.AsInteger, SqlDbType.Int)]
+        [InlineData(EnumStorage.AsString, SqlDbType.VarChar)]
+        public void duplicated_field_enum_storage_should_be_taken_from_store_options_duplicated_field_enum_storage_when_it_was_changed(EnumStorage enumStorage, SqlDbType expectedSqlDbType)
         {
             var storeOptions = new StoreOptions();
             storeOptions.DuplicatedFieldEnumStorage = enumStorage;
@@ -289,13 +289,13 @@ namespace Marten.Testing.Schema
             var mapping = new DocumentMapping<Target>(storeOptions);
 
             var duplicatedField = mapping.DuplicateField(nameof(Target.Color));
-            duplicatedField.DbType.ShouldBe(expectedNpgsqlDbType);
+            duplicatedField.DbType.ShouldBe(expectedSqlDbType);
         }
 
         [Theory]
-        [InlineData(true, NpgsqlDbType.Timestamp)]
-        [InlineData(false, NpgsqlDbType.TimestampTz)]
-        public void duplicated_field_date_time_db_type_should_be_taken_from_store_options_useTimestampWithoutTimeZoneForDateTime(bool useTimestampWithoutTimeZoneForDateTime, NpgsqlDbType expectedNpgsqlDbType)
+        [InlineData(true, SqlDbType.Timestamp)]
+        //[InlineData(false, SqlDbType.TimestampTz)]
+        public void duplicated_field_date_time_db_type_should_be_taken_from_store_options_useTimestampWithoutTimeZoneForDateTime(bool useTimestampWithoutTimeZoneForDateTime, SqlDbType expectedSqlDbType)
         {
             var storeOptions = new StoreOptions();
             storeOptions.DuplicatedFieldUseTimestampWithoutTimeZoneForDateTime = useTimestampWithoutTimeZoneForDateTime;
@@ -303,7 +303,7 @@ namespace Marten.Testing.Schema
             var mapping = new DocumentMapping<Target>(storeOptions);
 
             var duplicatedField = mapping.DuplicateField(nameof(Target.Date));
-            duplicatedField.DbType.ShouldBe(expectedNpgsqlDbType);
+            duplicatedField.DbType.ShouldBe(expectedSqlDbType);
         }
 
         [Fact]

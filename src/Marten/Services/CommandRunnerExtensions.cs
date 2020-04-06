@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,7 +7,7 @@ using Marten.Linq;
 using Marten.Linq.QueryHandlers;
 using Marten.Storage;
 using Marten.Util;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 
 namespace Marten.Services
 {
@@ -18,7 +18,7 @@ namespace Marten.Services
             return runner.Execute(cmd => cmd.WithText(sql).ExecuteNonQuery());
         }
 
-        public static QueryPlan ExplainQuery(this IManagedConnection runner, NpgsqlCommand cmd, Action<IConfigureExplainExpressions> configureExplain = null)
+        public static QueryPlan ExplainQuery(this IManagedConnection runner, SqlCommand cmd, Action<IConfigureExplainExpressions> configureExplain = null)
         {
             var serializer = new JsonNetSerializer();
 
@@ -69,7 +69,7 @@ namespace Marten.Services
             }, token).ConfigureAwait(false);
         }
 
-        public static IList<T> Resolve<T>(this IManagedConnection runner, NpgsqlCommand cmd, ISelector<T> selector, IIdentityMap map, QueryStatistics stats)
+        public static IList<T> Resolve<T>(this IManagedConnection runner, SqlCommand cmd, ISelector<T> selector, IIdentityMap map, QueryStatistics stats)
         {
             var selectMap = map.ForQuery();
 
@@ -89,7 +89,7 @@ namespace Marten.Services
             });
         }
 
-        public static Task<IList<T>> ResolveAsync<T>(this IManagedConnection runner, NpgsqlCommand cmd, ISelector<T> selector, IIdentityMap map, QueryStatistics stats, CancellationToken token)
+        public static Task<IList<T>> ResolveAsync<T>(this IManagedConnection runner, SqlCommand cmd, ISelector<T> selector, IIdentityMap map, QueryStatistics stats, CancellationToken token)
         {
             var selectMap = map.ForQuery();
 

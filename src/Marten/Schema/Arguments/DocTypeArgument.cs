@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
 using System.Reflection;
 using Baseline.Reflection;
-using NpgsqlTypes;
+using System.Data;
 
 namespace Marten.Schema.Arguments
 {
@@ -14,7 +14,7 @@ namespace Marten.Schema.Arguments
         {
             Arg = "docType";
             Column = DocumentMapping.DocumentTypeColumn;
-            DbType = NpgsqlDbType.Varchar;
+            DbType = SqlDbType.VarChar;
             PostgresType = "varchar";
         }
 
@@ -29,7 +29,7 @@ namespace Marten.Schema.Arguments
         public override Expression CompileUpdateExpression(EnumStorage enumStorage, ParameterExpression call, ParameterExpression doc, ParameterExpression updateBatch, ParameterExpression mapping, ParameterExpression currentVersion, ParameterExpression newVersion, ParameterExpression tenantId, bool useCharBufferPooling)
         {
             var argName = Expression.Constant(Arg);
-            var dbType = Expression.Constant(NpgsqlDbType.Varchar);
+            var dbType = Expression.Constant(SqlDbType.VarChar);
 
             var type = Expression.Call(doc, _getType);
             var alias = Expression.Call(mapping, _getAlias, type);

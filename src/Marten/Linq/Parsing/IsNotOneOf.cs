@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 using Baseline;
 using Marten.Schema;
 using Marten.Util;
-using NpgsqlTypes;
+using System.Data;
 
 namespace Marten.Linq.Parsing
 {
@@ -36,7 +36,7 @@ namespace Marten.Linq.Parsing
     {
         private readonly object _values;
         private readonly string _locator;
-        private readonly NpgsqlDbType _dbType;
+        private readonly SqlDbType _dbType;
 
         public EnumIsNotOneOfWhereFragment(object values, EnumStorage enumStorage, string locator)
         {
@@ -51,7 +51,7 @@ namespace Marten.Linq.Parsing
                 }
 
                 _values = numbers;
-                _dbType = NpgsqlDbType.Integer | NpgsqlDbType.Array;
+                _dbType = SqlDbType.Int;
             }
             else
             {
@@ -63,7 +63,7 @@ namespace Marten.Linq.Parsing
                 }
 
                 _values = strings;
-                _dbType = NpgsqlDbType.Varchar | NpgsqlDbType.Array;
+                _dbType = SqlDbType.VarChar;
             }
 
             _locator = locator;

@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 using Xunit;
 using Xunit.Abstractions;
 using Xunit.Sdk;
+using Marten.Util;
 
 namespace Marten.Testing.Harness
 {
@@ -25,10 +26,10 @@ namespace Marten.Testing.Harness
         static PgVersionTargetedFactDiscoverer()
         {
             // PG version does not change during test run so we can do static ctor
-            using (var c = new NpgsqlConnection(ConnectionSource.ConnectionString))
+            using (var c = new SqlConnection(ConnectionSource.ConnectionString))
             {
                 c.Open();
-                Version = c.PostgreSqlVersion;
+                Version = c.ServerVersion.ToVersion();
                 c.Close();
             }
         }

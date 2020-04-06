@@ -2,7 +2,7 @@ using System;
 using System.Linq.Expressions;
 using System.Reflection;
 using Baseline.Reflection;
-using NpgsqlTypes;
+using System.Data;
 
 namespace Marten.Schema.Arguments
 {
@@ -17,7 +17,7 @@ namespace Marten.Schema.Arguments
         {
             Arg = "docDotNetType";
             Column = DocumentMapping.DotNetTypeColumn;
-            DbType = NpgsqlDbType.Varchar;
+            DbType = SqlDbType.VarChar;
             PostgresType = "varchar";
         }
 

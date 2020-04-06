@@ -1,4 +1,5 @@
 using System;
+using System.Data;
 using System.Linq;
 using Baseline;
 using Marten.Util;
@@ -8,10 +9,10 @@ namespace Marten.Linq
     public class CustomizableWhereFragment: IWhereFragment
     {
         private readonly string _sql;
-        private readonly Tuple<object, NpgsqlTypes.NpgsqlDbType?>[] _parameters;
+        private readonly Tuple<object, SqlDbType?>[] _parameters;
         private readonly string _token;
 
-        public CustomizableWhereFragment(string sql, string paramReplacementToken, params Tuple<object, NpgsqlTypes.NpgsqlDbType?>[] parameters)
+        public CustomizableWhereFragment(string sql, string paramReplacementToken, params Tuple<object, SqlDbType?>[] parameters)
         {
             _sql = sql;
             _parameters = parameters;

@@ -7,7 +7,7 @@ using System.Linq;
 using Baseline;
 using Marten.Schema;
 using Marten.Util;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 
 namespace Marten.Storage
 {
@@ -234,7 +234,7 @@ GROUP BY constraint_name, constraint_type, schema_name, table_name, definition;
 ");
         }
 
-        public Table FetchExisting(NpgsqlConnection conn)
+        public Table FetchExisting(SqlConnection conn)
         {
             var cmd = conn.CreateCommand();
             var builder = new CommandBuilder(cmd);
@@ -249,7 +249,7 @@ GROUP BY constraint_name, constraint_type, schema_name, table_name, definition;
             }
         }
 
-        public TableDelta FetchDelta(NpgsqlConnection conn)
+        public TableDelta FetchDelta(SqlConnection conn)
         {
             var actual = FetchExisting(conn);
             if (actual == null)

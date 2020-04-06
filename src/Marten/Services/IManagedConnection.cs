@@ -1,33 +1,35 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Npgsql;
+
+using Microsoft.Data.SqlClient;
 
 namespace Marten.Services
 {
+
     public interface IManagedConnection: IDisposable
     {
-        void Execute(NpgsqlCommand cmd, Action<NpgsqlCommand> action = null);
+        void Execute(SqlCommand cmd, Action<SqlCommand> action = null);
 
-        void Execute(Action<NpgsqlCommand> action);
+        void Execute(Action<SqlCommand> action);
 
-        T Execute<T>(Func<NpgsqlCommand, T> func);
+        T Execute<T>(Func<SqlCommand, T> func);
 
-        T Execute<T>(NpgsqlCommand cmd, Func<NpgsqlCommand, T> func);
+        T Execute<T>(SqlCommand cmd, Func<SqlCommand, T> func);
 
-        Task ExecuteAsync(Func<NpgsqlCommand, CancellationToken, Task> action, CancellationToken token = default(CancellationToken));
+        Task ExecuteAsync(Func<SqlCommand, CancellationToken, Task> action, CancellationToken token = default(CancellationToken));
 
-        Task ExecuteAsync(NpgsqlCommand cmd, Func<NpgsqlCommand, CancellationToken, Task> action, CancellationToken token = default(CancellationToken));
+        Task ExecuteAsync(SqlCommand cmd, Func<SqlCommand, CancellationToken, Task> action, CancellationToken token = default(CancellationToken));
 
-        Task<T> ExecuteAsync<T>(Func<NpgsqlCommand, CancellationToken, Task<T>> func, CancellationToken token = default(CancellationToken));
+        Task<T> ExecuteAsync<T>(Func<SqlCommand, CancellationToken, Task<T>> func, CancellationToken token = default(CancellationToken));
 
-        Task<T> ExecuteAsync<T>(NpgsqlCommand cmd, Func<NpgsqlCommand, CancellationToken, Task<T>> func, CancellationToken token = default(CancellationToken));
+        Task<T> ExecuteAsync<T>(SqlCommand cmd, Func<SqlCommand, CancellationToken, Task<T>> func, CancellationToken token = default(CancellationToken));
 
         void Commit();
 
         void Rollback();
 
-        NpgsqlConnection Connection { get; }
+        SqlConnection Connection { get; }
 
         int RequestCount { get; }
 

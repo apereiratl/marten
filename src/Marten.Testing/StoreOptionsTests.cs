@@ -7,8 +7,8 @@ using Marten.Schema.Identity;
 using Marten.Services;
 using Marten.Storage;
 using Marten.Testing.Documents;
-using Npgsql;
-using NpgsqlTypes;
+using Microsoft.Data.SqlClient;
+using System.Data;
 using Shouldly;
 using Xunit;
 
@@ -123,14 +123,14 @@ namespace Marten.Testing
             public TenancyStyle TenancyStyle { get; }
             public Type DocumentType { get; } = typeof(User);
             public Type TopLevelBaseType => DocumentType;
-            public NpgsqlDbType IdType { get; }
+            public SqlDbType IdType { get; }
 
-            public NpgsqlCommand LoaderCommand(object id)
+            public SqlCommand LoaderCommand(object id)
             {
                 throw new NotImplementedException();
             }
 
-            public NpgsqlCommand LoadByArrayCommand<TKey>(TKey[] ids)
+            public SqlCommand LoadByArrayCommand<TKey>(TKey[] ids)
             {
                 throw new NotImplementedException();
             }
@@ -206,14 +206,14 @@ namespace Marten.Testing
             public TenancyStyle TenancyStyle { get; }
             public Type DocumentType { get; } = typeof(Company);
             public Type TopLevelBaseType { get; } = typeof(Company);
-            public NpgsqlDbType IdType { get; }
+            public SqlDbType IdType { get; }
 
-            public NpgsqlCommand LoaderCommand(object id)
+            public SqlCommand LoaderCommand(object id)
             {
                 throw new NotImplementedException();
             }
 
-            public NpgsqlCommand LoadByArrayCommand<TKey>(TKey[] ids)
+            public SqlCommand LoadByArrayCommand<TKey>(TKey[] ids)
             {
                 throw new NotImplementedException();
             }

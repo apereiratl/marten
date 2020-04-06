@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.IO;
 using Baseline;
 using Marten.Schema;
 using Marten.Storage;
 using Marten.Testing.Documents;
 using Marten.Util;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 using Shouldly;
 using Xunit;
 
@@ -13,12 +13,12 @@ namespace Marten.Testing.Storage
 {
     public class UpsertFunctionTester : IDisposable
     {
-        private readonly NpgsqlConnection _conn;
+        private readonly SqlConnection _conn;
         private readonly DocumentMapping<User> theMapping;
 
         public UpsertFunctionTester()
         {
-            _conn = new NpgsqlConnection(ConnectionSource.ConnectionString);
+            _conn = new SqlConnection(ConnectionSource.ConnectionString);
             _conn.Open();
 
             _conn.CreateCommand("drop schema if exists testbed cascade;create schema testbed")

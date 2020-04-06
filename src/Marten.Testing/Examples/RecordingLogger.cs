@@ -1,20 +1,20 @@
 using System;
 using System.Collections.Generic;
 using Marten.Services;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 
 namespace Marten.Testing.Examples
 {
     public class RecordingLogger: IMartenSessionLogger
     {
-        public readonly IList<NpgsqlCommand> Commands = new List<NpgsqlCommand>();
+        public readonly IList<SqlCommand> Commands = new List<SqlCommand>();
 
-        public void LogSuccess(NpgsqlCommand command)
+        public void LogSuccess(SqlCommand command)
         {
             Commands.Add(command);
         }
 
-        public void LogFailure(NpgsqlCommand command, Exception ex)
+        public void LogFailure(SqlCommand command, Exception ex)
         {
             Commands.Add(command);
         }

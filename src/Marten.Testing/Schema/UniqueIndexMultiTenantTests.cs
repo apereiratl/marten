@@ -1,7 +1,7 @@
 using System;
 using Marten.Schema;
 using Marten.Schema.Indexing.Unique;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 using Shouldly;
 using Xunit;
 
@@ -9,7 +9,7 @@ namespace Marten.Testing.Schema
 {
     public class UniqueIndexMultiTenantTests
     {
-        public const string UniqueSqlState = "23505";
+        public const int UniqueSqlState = 2601;
 
         private class Project
         {
@@ -64,7 +64,7 @@ namespace Marten.Testing.Schema
                 }
                 catch (Marten.Exceptions.MartenCommandException exception)
                 {
-                    ((PostgresException)exception.InnerException).SqlState.ShouldBe(UniqueSqlState);
+                    ((SqlException)exception.InnerException).Number.ShouldBe(UniqueSqlState);
                 }
             }
         }
@@ -93,7 +93,7 @@ namespace Marten.Testing.Schema
                 }
                 catch (Marten.Exceptions.MartenCommandException exception)
                 {
-                    ((PostgresException)exception.InnerException).SqlState.ShouldBe(UniqueSqlState);
+                    ((SqlException)exception.InnerException).Number.ShouldBe(UniqueSqlState);
                 }
             }
 
@@ -117,7 +117,7 @@ namespace Marten.Testing.Schema
                 }
                 catch (Marten.Exceptions.MartenCommandException exception)
                 {
-                    ((PostgresException)exception.InnerException).SqlState.ShouldBe(UniqueSqlState);
+                    ((SqlException)exception.InnerException).Number.ShouldBe(UniqueSqlState);
                 }
             }
         }
@@ -148,7 +148,7 @@ namespace Marten.Testing.Schema
                 }
                 catch (Marten.Exceptions.MartenCommandException exception)
                 {
-                    ((PostgresException)exception.InnerException).SqlState.ShouldBe(UniqueSqlState);
+                    ((SqlException)exception.InnerException).Number.ShouldBe(UniqueSqlState);
                 }
             }
 
@@ -172,7 +172,7 @@ namespace Marten.Testing.Schema
                 }
                 catch (Marten.Exceptions.MartenCommandException exception)
                 {
-                    ((PostgresException)exception.InnerException).SqlState.ShouldBe(UniqueSqlState);
+                    ((SqlException)exception.InnerException).Number.ShouldBe(UniqueSqlState);
                 }
             }
         }

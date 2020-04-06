@@ -1,17 +1,20 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Baseline;
-using Marten.Testing;
-using Marten.Testing.Events;
-using Marten.Testing.Events.Projections;
-using Marten.Util;
-using NpgsqlTypes;
-using StoryTeller;
-using StoryTeller.Grammars.Tables;
-
 namespace Marten.Storyteller.Fixtures.EventStore
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
+    using System.Linq;
+
+    using Baseline;
+
+    using Marten.Testing;
+    using Marten.Testing.Events;
+    using Marten.Testing.Events.Projections;
+    using Marten.Util;
+
+    using StoryTeller;
+    using StoryTeller.Grammars.Tables;
+
     public class EventStoreFixture: Fixture
     {
         private readonly LightweightCache<string, Guid> _streams = new LightweightCache<string, Guid>();
@@ -197,7 +200,7 @@ namespace Marten.Storyteller.Fixtures.EventStore
         {
             // TODO -- let's rethink this one later
             session.Connection.CreateCommand().WithText("update mt_events set timestamp = :date where id = :id")
-                .With("date", date.ToUniversalTime(), NpgsqlDbType.Timestamp)
+                .With("date", date.ToUniversalTime(), SqlDbType.Timestamp)
                 .With("id", id)
                 .ExecuteNonQuery();
 

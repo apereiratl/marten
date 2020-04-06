@@ -5,7 +5,7 @@ using Baseline.Reflection;
 using Marten.Schema;
 using Marten.Services;
 using Marten.Testing.Documents;
-using NpgsqlTypes;
+using System.Data;
 using Shouldly;
 using Xunit;
 
@@ -58,7 +58,7 @@ namespace Marten.Testing.Schema
             storeOptions.Serializer(new JsonNetSerializer { EnumStorage = EnumStorage.AsString });
 
             var field = DuplicatedField.For<Target>(storeOptions, x => x.Color);
-            field.UpsertArgument.DbType.ShouldBe(NpgsqlDbType.Varchar);
+            field.UpsertArgument.DbType.ShouldBe(SqlDbType.VarChar);
             field.UpsertArgument.PostgresType.ShouldBe("varchar");
 
             var constant = Expression.Constant((int)Colors.Blue);
@@ -91,7 +91,7 @@ namespace Marten.Testing.Schema
             var expectedPgType = pgType ?? "varchar";
             field.PgType.ShouldBe(expectedPgType);
             field.UpsertArgument.PostgresType.ShouldBe(expectedPgType);
-            field.DbType.ShouldBe(NpgsqlDbType.Text);
+            field.DbType.ShouldBe(SqlDbType.Text);
         }
 
         [Theory]
@@ -107,7 +107,7 @@ namespace Marten.Testing.Schema
             var expectedPgType = pgType ?? "uuid";
             field.PgType.ShouldBe(expectedPgType);
             field.UpsertArgument.PostgresType.ShouldBe(expectedPgType);
-            field.DbType.ShouldBe(NpgsqlDbType.Uuid);
+            field.DbType.ShouldBe(SqlDbType.UniqueIdentifier);
         }
 
         [Theory]
@@ -123,7 +123,7 @@ namespace Marten.Testing.Schema
             var expectedPgType = pgType ?? "varchar[]";
             field.PgType.ShouldBe(expectedPgType);
             field.UpsertArgument.PostgresType.ShouldBe(expectedPgType);
-            field.DbType.ShouldBe(NpgsqlDbType.Array | NpgsqlDbType.Text);
+            field.DbType.ShouldBe(SqlDbType.VarChar);
         }
 
         [Theory]
@@ -139,7 +139,7 @@ namespace Marten.Testing.Schema
             var expectedPgType = pgType ?? "jsonb";
             field.PgType.ShouldBe(expectedPgType);
             field.UpsertArgument.PostgresType.ShouldBe(expectedPgType);
-            field.DbType.ShouldBe(NpgsqlDbType.Array | NpgsqlDbType.Text);
+            field.DbType.ShouldBe(SqlDbType.VarChar);
         }
 
         [Theory]

@@ -1,9 +1,9 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
 using Marten.Services;
 using Marten.Util;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 using Shouldly;
 using Xunit;
 using Xunit.Abstractions;
@@ -22,7 +22,7 @@ namespace Marten.Testing
 #if NET461
 
         // SAMPLE: passing-in-existing-connections-and-transactions
-        public void samples(IDocumentStore store, NpgsqlConnection connection, NpgsqlTransaction transaction)
+        public void samples(IDocumentStore store, SqlConnection connection, NpgsqlTransaction transaction)
         {
             // Use an existing connection, but Marten still controls the transaction lifecycle
             var session1 = store.OpenSession(new SessionOptions
@@ -126,7 +126,7 @@ namespace Marten.Testing
         {
             var newTargets = Target.GenerateRandomData(5).ToArray();
 
-            using (var conn = new NpgsqlConnection(ConnectionSource.ConnectionString))
+            using (var conn = new SqlConnection(ConnectionSource.ConnectionString))
             {
                 conn.Open();
                 var tx = conn.BeginTransaction();
@@ -163,7 +163,7 @@ namespace Marten.Testing
         {
             var newTargets = Target.GenerateRandomData(5).ToArray();
 
-            using (var conn = new NpgsqlConnection(ConnectionSource.ConnectionString))
+            using (var conn = new SqlConnection(ConnectionSource.ConnectionString))
             {
                 await conn.OpenAsync();
                 var tx = conn.BeginTransaction();
@@ -200,7 +200,7 @@ namespace Marten.Testing
         {
             var newTargets = Target.GenerateRandomData(5).ToArray();
 
-            using (var conn = new NpgsqlConnection(ConnectionSource.ConnectionString))
+            using (var conn = new SqlConnection(ConnectionSource.ConnectionString))
             {
                 conn.Open();
                 var tx = conn.BeginTransaction();
@@ -240,7 +240,7 @@ namespace Marten.Testing
         {
             var newTargets = Target.GenerateRandomData(5).ToArray();
 
-            using (var conn = new NpgsqlConnection(ConnectionSource.ConnectionString))
+            using (var conn = new SqlConnection(ConnectionSource.ConnectionString))
             {
                 await conn.OpenAsync();
                 var tx = conn.BeginTransaction();

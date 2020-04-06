@@ -1,17 +1,21 @@
-using System;
-using System.Data.Common;
-using System.Threading;
-using System.Threading.Tasks;
-using Baseline;
-using Marten.Linq;
-using Marten.Schema;
-using Marten.Services;
-using Marten.Storage;
-using Marten.Util;
-using Npgsql;
-
 namespace Marten.Events
 {
+    using System;
+    using System.Data.Common;
+    using System.IO;
+    using System.Threading;
+    using System.Threading.Tasks;
+
+    using Baseline;
+
+    using Marten.Linq;
+    using Marten.Schema;
+    using Marten.Services;
+    using Marten.Storage;
+    using Marten.Util;
+
+    using Microsoft.Data.SqlClient;
+
     internal class StringIdentifiedEventSelector: IEventSelector
     {
         public EventGraph Events { get; }
@@ -82,7 +86,7 @@ namespace Marten.Events
                 mapping = Events.EventMappingFor(type);
             }
 
-            var dataJson = await reader.As<NpgsqlDataReader>().GetTextReaderAsync(3).ConfigureAwait(false);
+            var dataJson = await reader.As<SqlDataReader>().GetFieldValueAsync<TextReader>(3).ConfigureAwait(false);
             var data = TypeExtensions.As<object>(_serializer.FromJson(mapping.DocumentType, dataJson));
 
             var sequence = await reader.GetFieldValueAsync<long>(4, token).ConfigureAwait(false);

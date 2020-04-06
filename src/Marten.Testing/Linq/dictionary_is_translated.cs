@@ -4,6 +4,8 @@ using Marten.Services;
 using Shouldly;
 using Xunit;
 
+using System.Data;
+
 namespace Marten.Testing.Linq
 {
     public class dictionary_is_translated: DocumentSessionFixture<NulloIdentityMap>
@@ -46,7 +48,7 @@ namespace Marten.Testing.Linq
             var query = theSession.Query<Target>().Where(t => t.StringDict.Contains(new KeyValuePair<string, string>("foo", "bar")));
             var command = query.ToCommand(Marten.Linq.FetchType.FetchMany);
             var dictParam = command.Parameters[0];
-            (dictParam.NpgsqlDbType == NpgsqlTypes.NpgsqlDbType.Jsonb).ShouldBeTrue();
+            (dictParam.SqlDbType == SqlDbType.VarChar).ShouldBeTrue();
             (dictParam.Value.ToString() == "{\"foo\":\"bar\"}").ShouldBeTrue();
         }
     }

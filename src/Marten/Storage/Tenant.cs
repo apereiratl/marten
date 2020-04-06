@@ -14,7 +14,7 @@ using Marten.Schema.Identity.Sequences;
 using Marten.Services;
 using Marten.Transforms;
 using Marten.Util;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 
 namespace Marten.Storage
 {
@@ -241,7 +241,7 @@ namespace Marten.Storage
         /// Fetch a connection to the tenant database
         /// </summary>
         /// <returns></returns>
-        public NpgsqlConnection CreateConnection()
+        public SqlConnection CreateConnection()
         {
             return _factory.Create();
         }

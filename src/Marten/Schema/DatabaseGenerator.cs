@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Text;
 using Marten.Storage;
 using Marten.Util;
-using Npgsql;
 
 namespace Marten.Schema
 {
+    using Microsoft.Data.SqlClient;
+
     public sealed class DatabaseGenerator: IDatabaseCreationExpressions, IDatabaseGenerator
     {
         private string _maintenanceDbConnectionString;
@@ -32,7 +33,7 @@ namespace Marten.Schema
             public bool DropExistingDatabase { get; private set; }
             public bool CheckAgainstCatalog { get; private set; }
             public bool KillConnections { get; private set; }
-            public Action<NpgsqlConnection> OnDbCreated { get; private set; }
+            public Action<SqlConnection> OnDbCreated { get; private set; }
             public bool CreatePLV8Extension { get; private set; }
 
             public ITenantDatabaseCreationExpressions DropExisting(bool killConnections = false)
@@ -84,7 +85,7 @@ namespace Marten.Schema
                 return this;
             }
 
-            public ITenantDatabaseCreationExpressions OnDatabaseCreated(Action<NpgsqlConnection> onDbCreated)
+            public ITenantDatabaseCreationExpressions OnDatabaseCreated(Action<SqlConnection> onDbCreated)
             {
                 OnDbCreated = onDbCreated;
                 return this;
@@ -131,8 +132,7 @@ namespace Marten.Schema
 
                 if (maintenanceDb == null)
                 {
-                    var cstringBuilder = new NpgsqlConnectionStringBuilder(t.ConnectionString);
-                    cstringBuilder.Database = "postgres";
+                    var cstringBuilder = new SqlConnectionStringBuilder(t.ConnectionString) { InitialCatalog = "postgres" };
                     maintenanceDb = cstringBuilder.ToString();
                 }
 
@@ -155,7 +155,7 @@ namespace Marten.Schema
 
         private bool IsNotInPgDatabase(string catalog, string maintenanceDb)
         {
-            using (var connection = new NpgsqlConnection(maintenanceDb))
+            using (var connection = new SqlConnection(maintenanceDb))
             using (var cmd = connection.CreateCommand("SELECT datname FROM pg_database where datname = @catalog"))
             {
                 cmd.AddNamedParameter("catalog", catalog);
@@ -175,7 +175,7 @@ namespace Marten.Schema
             }
         }
 
-        private bool CannotConnectDueToInvalidCatalog(NpgsqlConnection t)
+        private bool CannotConnectDueToInvalidCatalog(SqlConnection t)
         {
             try
             {
@@ -183,7 +183,7 @@ namespace Marten.Schema
                 t.Close();
             }
             // INVALID CATALOG NAME (https://www.postgresql.org/docs/current/static/errcodes-appendix.html)
-            catch (PostgresException e) when (e.SqlState == "3D000")
+            catch (SqlException e) when (e.Number == 2520 || e.Number == 2521)
             {
                 return true;
             }
@@ -204,7 +204,7 @@ namespace Marten.Schema
                 cmdText += $"DROP DATABASE IF EXISTS \"{catalog}\";";
             }
 
-            using (var connection = new NpgsqlConnection(maintenanceDb))
+            using (var connection = new SqlConnection(maintenanceDb))
             using (var cmd = connection.CreateCommand(cmdText))
             {
                 cmd.CommandText += $"CREATE DATABASE \"{catalog}\" WITH" + config;

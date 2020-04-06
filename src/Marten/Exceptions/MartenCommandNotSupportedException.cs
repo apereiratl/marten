@@ -1,9 +1,10 @@
-using System;
-using System.Text.RegularExpressions;
-using Npgsql;
-
 namespace Marten.Exceptions
 {
+    using System;
+    using System.Text.RegularExpressions;
+
+    using Microsoft.Data.SqlClient;
+
     /// <summary>
     /// Reasons for feature not being supported
     /// </summary>
@@ -31,7 +32,6 @@ namespace Marten.Exceptions
         public NotSupportedReason Reason { get; }
 
         /// <summary>
-        ///
         /// Creates MartenCommandNotSupportedException based on the reason, command and innerException information with formatted message.
         /// </summary>
         /// <param name="reason">reason for feature not being supported</param>
@@ -40,10 +40,10 @@ namespace Marten.Exceptions
         /// <param name="message">optional additional exception information</param>
         public MartenCommandNotSupportedException(
             NotSupportedReason reason,
-            NpgsqlCommand command,
+            SqlCommand command,
             Exception innerException,
-            string message = null
-        ) : base(command, innerException, message)
+            string message = null)
+            : base(command, innerException, message)
         {
             Reason = reason;
         }
@@ -60,14 +60,16 @@ namespace Marten.Exceptions
             this.match = match;
         }
 
+        // todo: convert to actual sql server fulltext related items
+        // realistically, I will likely not support anything under sql 2017 or SQL Azure
         internal static readonly KnownNotSupportedExceptionCause ToTsvectorOnJsonb = new KnownNotSupportedExceptionCause("Full Text Search needs at least Postgres version 10.",
             NotSupportedReason.FullTextSearchNeedsAtLeastPostgresVersion10,
-            e => e is PostgresException pe && pe.SqlState == PostgresErrorCodes.UndefinedFunction &&
+            e => e is SqlException pe && pe.Number == 261 &&
                  new Regex(@"function to_tsvector\((?:regconfig, )?jsonb\) does not exist").IsMatch(pe.Message));
 
         internal static readonly KnownNotSupportedExceptionCause WebStyleSearch = new KnownNotSupportedExceptionCause("Full Text Search needs at least Postgres version 10.",
             NotSupportedReason.WebStyleSearchNeedsAtLeastPostgresVersion11,
-            e => e is PostgresException pe && pe.SqlState == PostgresErrorCodes.UndefinedFunction &&
+            e => e is SqlException pe && pe.Number == 261 &&
                  new Regex(@"function websearch_to_tsquery\((?:regconfig, )?text\) does not exist").IsMatch(pe.Message));
 
         internal static readonly KnownNotSupportedExceptionCause[] KnownCauses = { ToTsvectorOnJsonb, WebStyleSearch };

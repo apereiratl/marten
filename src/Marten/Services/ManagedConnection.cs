@@ -4,10 +4,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
 using Marten.Exceptions;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 
 namespace Marten.Services
 {
+
     public class ManagedConnection: IManagedConnection
     {
         private readonly IConnectionFactory _factory;
@@ -42,7 +43,7 @@ namespace Marten.Services
 
             var conn = options.Connection ?? options.Transaction?.Connection;
 
-            _commandTimeout = options.Timeout ?? conn?.CommandTimeout;
+            _commandTimeout = options.Timeout;
 
             _connection = new TransactionState(_mode, _isolationLevel, _commandTimeout, conn, options.OwnsConnection, options.Transaction);
             _retryPolicy = retryPolicy;
@@ -56,7 +57,7 @@ namespace Marten.Services
         {
         }
 
-        // 30 is NpgsqlCommand.DefaultTimeout - ok to burn it to the call site?
+        // 30 is SqlCommand.DefaultTimeout - ok to burn it to the call site?
         public ManagedConnection(IConnectionFactory factory, CommandRunnerMode mode, IRetryPolicy retryPolicy,
             IsolationLevel isolationLevel = IsolationLevel.ReadCommitted, int? commandTimeout = null)
         {
@@ -133,11 +134,11 @@ namespace Marten.Services
             catch (RollbackException e)
             {
                 if (e.InnerException != null)
-                    Logger.LogFailure(new NpgsqlCommand(), e.InnerException);
+                    Logger.LogFailure(new SqlCommand(), e.InnerException);
             }
             catch (Exception e)
             {
-                Logger.LogFailure(new NpgsqlCommand(), e);
+                Logger.LogFailure(new SqlCommand(), e);
             }
             finally
             {
@@ -160,11 +161,11 @@ namespace Marten.Services
             catch (RollbackException e)
             {
                 if (e.InnerException != null)
-                    Logger.LogFailure(new NpgsqlCommand(), e.InnerException);
+                    Logger.LogFailure(new SqlCommand(), e.InnerException);
             }
             catch (Exception e)
             {
-                Logger.LogFailure(new NpgsqlCommand(), e);
+                Logger.LogFailure(new SqlCommand(), e);
             }
             finally
             {
@@ -200,7 +201,7 @@ namespace Marten.Services
             return _connection?.Transaction != null;
         }
 
-        public NpgsqlConnection Connection
+        public SqlConnection Connection
         {
             get
             {
@@ -210,23 +211,24 @@ namespace Marten.Services
             }
         }
 
-        private void handleCommandException(NpgsqlCommand cmd, Exception e)
+        private void handleCommandException(SqlCommand cmd, Exception e)
         {
             this.SafeDispose();
             Logger.LogFailure(cmd, e);
 
-            if ((e as PostgresException)?.SqlState == PostgresErrorCodes.SerializationFailure)
-            {
-                throw new ConcurrentUpdateException(e);
-            }
+            // todo: see what conditions we need to check for on this.
+            //if ((e as SqlException)?.Number == PostgresErrorCodes.SerializationFailure)
+            //{
+            //    throw new ConcurrentUpdateException(e);
+            //}
 
-            if (e is NpgsqlException)
+            if (e is SqlException)
             {
                 throw MartenCommandExceptionFactory.Create(cmd, e);
             }
         }
 
-        public void Execute(NpgsqlCommand cmd, Action<NpgsqlCommand> action = null)
+        public void Execute(SqlCommand cmd, Action<SqlCommand> action = null)
         {
             buildConnection();
 
@@ -250,7 +252,7 @@ namespace Marten.Services
             }
         }
 
-        public void Execute(Action<NpgsqlCommand> action)
+        public void Execute(Action<SqlCommand> action)
         {
             buildConnection();
 
@@ -269,7 +271,7 @@ namespace Marten.Services
             }
         }
 
-        public T Execute<T>(Func<NpgsqlCommand, T> func)
+        public T Execute<T>(Func<SqlCommand, T> func)
         {
             buildConnection();
 
@@ -289,7 +291,7 @@ namespace Marten.Services
             }
         }
 
-        public T Execute<T>(NpgsqlCommand cmd, Func<NpgsqlCommand, T> func)
+        public T Execute<T>(SqlCommand cmd, Func<SqlCommand, T> func)
         {
             buildConnection();
 
@@ -310,7 +312,7 @@ namespace Marten.Services
             }
         }
 
-        public async Task ExecuteAsync(Func<NpgsqlCommand, CancellationToken, Task> action, CancellationToken token = new CancellationToken())
+        public async Task ExecuteAsync(Func<SqlCommand, CancellationToken, Task> action, CancellationToken token = new CancellationToken())
         {
             await buildConnectionAsync(token).ConfigureAwait(false);
 
@@ -330,7 +332,7 @@ namespace Marten.Services
             }
         }
 
-        public async Task ExecuteAsync(NpgsqlCommand cmd, Func<NpgsqlCommand, CancellationToken, Task> action, CancellationToken token = new CancellationToken())
+        public async Task ExecuteAsync(SqlCommand cmd, Func<SqlCommand, CancellationToken, Task> action, CancellationToken token = new CancellationToken())
         {
             await _retryPolicy.ExecuteAsync(async () => await buildConnectionAsync(token).ConfigureAwait(false), token);
 
@@ -350,7 +352,7 @@ namespace Marten.Services
             }
         }
 
-        public async Task<T> ExecuteAsync<T>(Func<NpgsqlCommand, CancellationToken, Task<T>> func, CancellationToken token = new CancellationToken())
+        public async Task<T> ExecuteAsync<T>(Func<SqlCommand, CancellationToken, Task<T>> func, CancellationToken token = new CancellationToken())
         {
             await buildConnectionAsync(token).ConfigureAwait(false);
 
@@ -371,7 +373,7 @@ namespace Marten.Services
             }
         }
 
-        public async Task<T> ExecuteAsync<T>(NpgsqlCommand cmd, Func<NpgsqlCommand, CancellationToken, Task<T>> func, CancellationToken token = new CancellationToken())
+        public async Task<T> ExecuteAsync<T>(SqlCommand cmd, Func<SqlCommand, CancellationToken, Task<T>> func, CancellationToken token = new CancellationToken())
         {
             await buildConnectionAsync(token).ConfigureAwait(false);
 

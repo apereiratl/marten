@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using Marten.Storage;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 
 namespace Marten.Services
 {
@@ -39,12 +39,12 @@ namespace Marten.Services
         /// <summary>
         /// Optional mechanism to open a session with an existing connection
         /// </summary>
-        public NpgsqlConnection Connection { get; set; }
+        public SqlConnection Connection { get; set; }
 
         /// <summary>
         /// Optional mechanism to open a session with an existing transaction
         /// </summary>
-        public NpgsqlTransaction Transaction { get; set; }
+        public SqlTransaction Transaction { get; set; }
 
         /// <summary>
         /// Default is true. If false, Marten will issue commands on IDocumentSession.SaveChanges/SaveChangesAsync,
@@ -58,7 +58,7 @@ namespace Marten.Services
         /// </summary>
         /// <param name="transaction"></param>
         /// <returns></returns>
-        public static SessionOptions ForTransaction(NpgsqlTransaction transaction)
+        public static SessionOptions ForTransaction(SqlTransaction transaction)
         {
             return new SessionOptions
             {

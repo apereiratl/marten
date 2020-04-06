@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Reflection;
+
 using Baseline;
+
 using Marten.Util;
-using Npgsql;
-using NpgsqlTypes;
+
+using Microsoft.Data.SqlClient;
 
 namespace Marten.Linq.Compiled
 {
@@ -59,7 +62,7 @@ namespace Marten.Linq.Compiled
             return dict;
         }
 
-        public NpgsqlParameter AddParameter(object query, CommandBuilder command)
+        public SqlParameter AddParameter(object query, CommandBuilder command)
         {
             var dict = BuildDictionary((TQuery)query);
 
@@ -74,12 +77,12 @@ namespace Marten.Linq.Compiled
             var json = _serializer.ToCleanJson(dict);
 
             var param = command.AddParameter(json);
-            param.NpgsqlDbType = NpgsqlDbType.Jsonb;
+            param.SqlDbType = SqlDbType.NVarChar;
 
             return param;
         }
 
-        public void ReplaceValue(NpgsqlParameter cmdParameter)
+        public void ReplaceValue(SqlParameter cmdParameter)
         {
         }
     }

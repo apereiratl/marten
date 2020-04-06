@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using Marten.Linq;
 using Marten.Services;
 using Marten.Storage;
-using Npgsql;
-using NpgsqlTypes;
+using System.Data;
+using Microsoft.Data.SqlClient;
 
 namespace Marten.Schema
 {
@@ -25,11 +25,11 @@ namespace Marten.Schema
 
         Type TopLevelBaseType { get; }
 
-        NpgsqlDbType IdType { get; }
+        SqlDbType IdType { get; }
 
-        NpgsqlCommand LoaderCommand(object id);
+        SqlCommand LoaderCommand(object id);
 
-        NpgsqlCommand LoadByArrayCommand<TKey>(TKey[] ids);
+        SqlCommand LoadByArrayCommand<TKey>(TKey[] ids);
 
         object Identity(object document);
 

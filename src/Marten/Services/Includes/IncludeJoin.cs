@@ -4,7 +4,7 @@ using Marten.Linq;
 using Marten.Schema;
 using Marten.Storage;
 using Marten.Util;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 
 namespace Marten.Services.Includes
 {
@@ -69,7 +69,7 @@ namespace Marten.Services.Includes
         {
             get
             {
-                var sql = new CommandBuilder(new NpgsqlCommand());
+                var sql = new CommandBuilder(new SqlCommand());
                 AppendJoin(sql, "d", null);
 
                 return sql.ToString();

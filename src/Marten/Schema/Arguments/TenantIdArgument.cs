@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 using Marten.Storage;
-using NpgsqlTypes;
+using System.Data;
 
 namespace Marten.Schema.Arguments
 {
@@ -12,7 +12,7 @@ namespace Marten.Schema.Arguments
         {
             Arg = ArgName;
             PostgresType = "varchar";
-            DbType = NpgsqlDbType.Varchar;
+            DbType = SqlDbType.VarChar;
             Column = TenantIdColumn.Name;
         }
 
@@ -29,7 +29,7 @@ namespace Marten.Schema.Arguments
             ParameterExpression newVersion, ParameterExpression tenantId, bool useCharBufferPooling)
         {
             var argName = Expression.Constant(Arg);
-            var dbType = Expression.Constant(NpgsqlDbType.Varchar);
+            var dbType = Expression.Constant(SqlDbType.VarChar);
 
             return Expression.Call(call, _paramMethod, argName, tenantId, dbType);
         }

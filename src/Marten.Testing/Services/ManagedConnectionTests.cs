@@ -1,7 +1,7 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Marten.Services;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 using Shouldly;
 using Xunit;
 
@@ -19,20 +19,20 @@ namespace Marten.Testing.Services
                 connection.Execute(cmd => { });
                 connection.RequestCount.ShouldBe(1);
 
-                connection.Execute(new NpgsqlCommand(), c => { });
+                connection.Execute(new SqlCommand(), c => { });
                 connection.RequestCount.ShouldBe(2);
 
                 connection.Execute(c => "");
                 connection.RequestCount.ShouldBe(3);
 
-                connection.Execute(new NpgsqlCommand(), c => "");
+                connection.Execute(new SqlCommand(), c => "");
                 connection.RequestCount.ShouldBe(4);
 
 
                 await connection.ExecuteAsync(async (c, t) => { await Task.CompletedTask; });
                 connection.RequestCount.ShouldBe(5);
 
-                await connection.ExecuteAsync(new NpgsqlCommand(), async (c, t) => { await Task.CompletedTask; });
+                await connection.ExecuteAsync(new SqlCommand(), async (c, t) => { await Task.CompletedTask; });
                 connection.RequestCount.ShouldBe(6);
 
                 await connection.ExecuteAsync(async (c, t) =>
@@ -42,7 +42,7 @@ namespace Marten.Testing.Services
                 });
                 connection.RequestCount.ShouldBe(7);
 
-                await connection.ExecuteAsync(new NpgsqlCommand(), async (c, t) =>
+                await connection.ExecuteAsync(new SqlCommand(), async (c, t) =>
                 {
                     await Task.CompletedTask;
                     return "";
@@ -104,7 +104,7 @@ namespace Marten.Testing.Services
             var logger = new RecordingLogger();
             using (var connection = new ManagedConnection(new ConnectionSource(), new NulloRetryPolicy()) {Logger = logger})
             {
-                var cmd = new NpgsqlCommand();
+                var cmd = new SqlCommand();
 
                 Exception<DivideByZeroException>.ShouldBeThrownBy(
                     () => { connection.Execute(cmd, c => { throw ex; }); });
@@ -123,7 +123,7 @@ namespace Marten.Testing.Services
             var logger = new RecordingLogger();
             using (var connection = new ManagedConnection(new ConnectionSource(), new NulloRetryPolicy()) {Logger = logger})
             {
-                var cmd = new NpgsqlCommand();
+                var cmd = new SqlCommand();
 
                 await Exception<DivideByZeroException>.ShouldBeThrownByAsync(async () =>
                 {
@@ -176,7 +176,7 @@ namespace Marten.Testing.Services
             var logger = new RecordingLogger();
             using (var connection = new ManagedConnection(new ConnectionSource(), new NulloRetryPolicy()) {Logger = logger})
             {
-                var cmd = new NpgsqlCommand();
+                var cmd = new SqlCommand();
                 connection.Execute(cmd, c => c.CommandText = "do something");
 
                 logger.LastCommand.ShouldBeSameAs(cmd);
@@ -190,7 +190,7 @@ namespace Marten.Testing.Services
             var logger = new RecordingLogger();
             using (var connection = new ManagedConnection(new ConnectionSource(), new NulloRetryPolicy()) {Logger = logger})
             {
-                var cmd = new NpgsqlCommand();
+                var cmd = new SqlCommand();
                 await connection.ExecuteAsync(cmd, async (c, tkn) =>
                 {
                     await Task.CompletedTask;
@@ -243,7 +243,7 @@ namespace Marten.Testing.Services
             var logger = new RecordingLogger();
             using (var connection = new ManagedConnection(new ConnectionSource(), new NulloRetryPolicy()) {Logger = logger})
             {
-                var cmd = new NpgsqlCommand();
+                var cmd = new SqlCommand();
                 connection.Execute(cmd, c => "something");
 
                 logger.LastCommand.ShouldBeSameAs(cmd);
@@ -257,7 +257,7 @@ namespace Marten.Testing.Services
             var logger = new RecordingLogger();
             using (var connection = new ManagedConnection(new ConnectionSource(), new NulloRetryPolicy()) {Logger = logger})
             {
-                var cmd = new NpgsqlCommand();
+                var cmd = new SqlCommand();
                 await connection.ExecuteAsync(cmd, async (c, tkn) =>
                 {
                     await Task.CompletedTask;
@@ -321,7 +321,7 @@ namespace Marten.Testing.Services
             var logger = new RecordingLogger();
             using (var connection = new ManagedConnection(new ConnectionSource(), new NulloRetryPolicy()) {Logger = logger})
             {
-                var cmd = new NpgsqlCommand();
+                var cmd = new SqlCommand();
 
                 Exception<DivideByZeroException>.ShouldBeThrownBy(() =>
                 {
@@ -342,7 +342,7 @@ namespace Marten.Testing.Services
             var logger = new RecordingLogger();
             using (var connection = new ManagedConnection(new ConnectionSource(), new NulloRetryPolicy()) {Logger = logger})
             {
-                var cmd = new NpgsqlCommand();
+                var cmd = new SqlCommand();
 
                 await Exception<DivideByZeroException>.ShouldBeThrownByAsync(async () =>
                 {
@@ -350,9 +350,7 @@ namespace Marten.Testing.Services
                             {
                                 await Task.CompletedTask;
                                 throw ex;
-                            }
-                        )
-                        ;
+                    });
                 });
 
 
@@ -365,7 +363,7 @@ namespace Marten.Testing.Services
 
     public class RecordingLogger : IMartenSessionLogger
     {
-        public NpgsqlCommand LastCommand;
+        public SqlCommand LastCommand;
         public Exception LastException;
 
         public void RecordSavedChanges(IDocumentSession session, IChangeSet commit)
@@ -373,12 +371,12 @@ namespace Marten.Testing.Services
             throw new NotImplementedException();
         }
 
-        public void LogSuccess(NpgsqlCommand command)
+        public void LogSuccess(SqlCommand command)
         {
             LastCommand = command;
         }
 
-        public void LogFailure(NpgsqlCommand command, Exception ex)
+        public void LogFailure(SqlCommand command, Exception ex)
         {
             LastCommand = command;
             LastException = ex;

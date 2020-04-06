@@ -1,8 +1,9 @@
 using System;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 
 namespace Marten
 {
+
     /// <summary>
     /// Wraps the Postgres command exceptions. Unifies exception handling and brings additonal information.
     /// </summary>
@@ -12,12 +13,11 @@ namespace Marten
         /// <summary>
         /// Failed Postgres command
         /// </summary>
-        public NpgsqlCommand Command { get; }
+        public SqlCommand Command { get; }
 
         protected static string ToMessage(
-            NpgsqlCommand command,
-            string prefix = null
-        )
+            SqlCommand command,
+            string prefix = null)
         {
             if (prefix != null)
             {
@@ -32,7 +32,7 @@ namespace Marten
         /// </summary>
         /// <param name="command">failed Postgres command</param>
         /// <param name="innerException">internal exception details</param>
-        public MartenCommandException(NpgsqlCommand command, Exception innerException)
+        public MartenCommandException(SqlCommand command, Exception innerException)
             : base(ToMessage(command) + innerException.Message, innerException)
         {
             Command = command;
@@ -45,10 +45,10 @@ namespace Marten
         /// <param name="innerException">internal exception details</param>
         /// <param name="prefix">prefix that will be added to message</param>
         public MartenCommandException(
-            NpgsqlCommand command,
+            SqlCommand command,
             Exception innerException,
-            string prefix
-        ) : base(ToMessage(command, prefix) + innerException.Message, innerException)
+            string prefix)
+            : base(ToMessage(command, prefix) + innerException.Message, innerException)
         {
             Command = command;
         }

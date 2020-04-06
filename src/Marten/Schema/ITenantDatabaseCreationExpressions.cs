@@ -1,5 +1,5 @@
 using System;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 
 namespace Marten.Schema
 {
@@ -37,7 +37,7 @@ namespace Marten.Schema
         /// <summary>
         /// Callback to be invoked after database creation
         /// </summary>
-        ITenantDatabaseCreationExpressions OnDatabaseCreated(Action<NpgsqlConnection> onDbCreated);
+        ITenantDatabaseCreationExpressions OnDatabaseCreated(Action<SqlConnection> onDbCreated);
 
         /// <summary>
         /// Create PLV8 extension for database

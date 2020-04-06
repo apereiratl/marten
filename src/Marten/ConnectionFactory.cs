@@ -1,5 +1,5 @@
 using System;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 
 namespace Marten
 {
@@ -29,9 +29,9 @@ namespace Marten
             _connectionString = new Lazy<string>(() => connectionString);
         }
 
-        public NpgsqlConnection Create()
+        public SqlConnection Create()
         {
-            return new NpgsqlConnection(_connectionString.Value);
+            return new SqlConnection(_connectionString.Value);
         }
     }
 }

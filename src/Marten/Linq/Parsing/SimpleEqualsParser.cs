@@ -8,6 +8,8 @@ using Marten.Util;
 
 namespace Marten.Linq.Parsing
 {
+    using System.Data;
+
     /// <summary>
     /// Implement Equals for <see cref="int"/>, <see cref="long"/>, <see cref="decimal"/>, <see cref="Guid"/>, <see cref="bool"/>, <see cref="DateTime"/>, <see cref="DateTimeOffset"/>.
     /// </summary>
@@ -24,8 +26,8 @@ namespace Marten.Linq.Parsing
 
         static SimpleEqualsParser()
         {
-            SupportedTypes.AddRange(TypeMappings.ResolveTypes(NpgsqlTypes.NpgsqlDbType.Timestamp));
-            SupportedTypes.AddRange(TypeMappings.ResolveTypes(NpgsqlTypes.NpgsqlDbType.TimestampTz));
+            SupportedTypes.AddRange(TypeMappings.ResolveTypes(SqlDbType.Timestamp));
+            SupportedTypes.AddRange(TypeMappings.ResolveTypes(SqlDbType.Timestamp));
         }
 
         public SimpleEqualsParser(string equalsOperator = "=", string isOperator = "is", bool supportContainment = true)

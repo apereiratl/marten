@@ -1,5 +1,5 @@
 using Newtonsoft.Json;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 
 namespace Marten.Linq
 {
@@ -93,7 +93,7 @@ namespace Marten.Linq
         /// <summary>
         /// The command executed by Marten
         /// </summary>
-        public NpgsqlCommand Command { get; set; }
+        public SqlCommand Command { get; set; }
     }
 
     internal class QueryPlanContainer

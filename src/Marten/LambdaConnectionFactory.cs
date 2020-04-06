@@ -1,18 +1,18 @@
 using System;
-using Npgsql;
+using Microsoft.Data.SqlClient;
 
 namespace Marten
 {
     public class LambdaConnectionFactory: IConnectionFactory
     {
-        private readonly Func<NpgsqlConnection> _source;
+        private readonly Func<SqlConnection> _source;
 
-        public LambdaConnectionFactory(Func<NpgsqlConnection> source)
+        public LambdaConnectionFactory(Func<SqlConnection> source)
         {
             _source = source;
         }
 
-        public NpgsqlConnection Create()
+        public SqlConnection Create()
         {
             return _source();
         }

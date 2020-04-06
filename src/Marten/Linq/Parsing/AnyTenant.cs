@@ -4,10 +4,12 @@ using Baseline;
 using Marten.Schema;
 using Marten.Storage;
 using Marten.Util;
-using NpgsqlTypes;
+using System.Data;
 
 namespace Marten.Linq.Parsing
 {
+    using System.Data;
+
     public interface ITenantWhereFragment
     {
     }
@@ -59,7 +61,7 @@ namespace Marten.Linq.Parsing
         public void Apply(CommandBuilder builder)
         {
             var param = builder.AddParameter(_values);
-            param.NpgsqlDbType = NpgsqlDbType.Array | NpgsqlDbType.Varchar;
+            param.SqlDbType = SqlDbType.NVarChar;
             builder.Append(_filter.Replace("?", ":" + param.ParameterName));
         }
 

@@ -1,36 +1,35 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Marten.Util;
-using Npgsql;
-using Npgsql.TypeHandlers;
-using Npgsql.TypeMapping;
-using NpgsqlTypes;
+using System.Data;
+using Microsoft.Data.SqlClient;
 using Shouldly;
 using Xunit;
 
 namespace Marten.Testing
 {
+    // TODO: WE NEED A TYPE MAPPER
     public class TypeMappingsTests
     {
         [Fact]
         public void execute_to_db_type_as_int()
         {
-            TypeMappings.ToDbType(typeof(int)).ShouldBe(NpgsqlDbType.Integer);
-            TypeMappings.ToDbType(typeof(int?)).ShouldBe(NpgsqlDbType.Integer);
+            TypeMappings.ToDbType(typeof(int)).ShouldBe(SqlDbType.Int);
+            TypeMappings.ToDbType(typeof(int?)).ShouldBe(SqlDbType.Int);
         }
 
         [Fact]
         public void execute_to_db_custom_mappings_resolve()
         {
-            NpgsqlConnection.GlobalTypeMapper.AddMapping(new NpgsqlTypeMappingBuilder
-            {
-                PgTypeName = "varchar",
-                NpgsqlDbType = NpgsqlDbType.Varchar,
-                ClrTypes = new[] { typeof(MappedTarget) },
-                TypeHandlerFactory = new TextHandlerFactory()
-            }.Build());
+            //SqlConnection.GlobalTypeMapper.AddMapping(new NpgsqlTypeMappingBuilder
+            //{
+            //    PgTypeName = "varchar",
+            //    SqlDbType = SqlDbType.VarChar,
+            //    ClrTypes = new[] { typeof(MappedTarget) },
+            //    TypeHandlerFactory = new TextHandlerFactory()
+            //}.Build());
 
-            TypeMappings.ToDbType(typeof(MappedTarget)).ShouldBe(NpgsqlDbType.Varchar);
+            TypeMappings.ToDbType(typeof(MappedTarget)).ShouldBe(SqlDbType.VarChar);
             ShouldThrowExtensions.ShouldThrow<Exception>(() => TypeMappings.ToDbType(typeof(UnmappedTarget)));
         }
 
@@ -45,7 +44,7 @@ namespace Marten.Testing
         [Fact]
         public void execute_get_pg_type_custom_mappings_resolve_or_default_to_jsonb()
         {
-            NpgsqlConnection.GlobalTypeMapper.MapComposite<MappedTarget>("varchar");
+            //SqlConnection.GlobalTypeMapper.MapComposite<MappedTarget>("varchar");
 
             TypeMappings.GetPgType(typeof(MappedTarget), EnumStorage.AsString).ShouldBe("varchar");
             TypeMappings.GetPgType(typeof(UnmappedTarget), EnumStorage.AsString).ShouldBe("jsonb");
@@ -54,7 +53,7 @@ namespace Marten.Testing
         [Fact]
         public void execute_has_type_mapping_resolves_custom_types()
         {
-            NpgsqlConnection.GlobalTypeMapper.MapComposite<MappedTarget>("varchar");
+            //SqlConnection.GlobalTypeMapper.MapComposite<MappedTarget>("varchar");
 
             TypeMappings.HasTypeMapping(typeof(MappedTarget)).ShouldBeTrue();
             TypeMappings.HasTypeMapping(typeof(UnmappedTarget)).ShouldBeFalse();
