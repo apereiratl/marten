@@ -1,8 +1,8 @@
-CREATE OR REPLACE FUNCTION mt_grams_array(words text)
-        RETURNS text[]
+CREATE OR REPLACE FUNCTION {databaseSchema}.mt_grams_array(words text)
+        RETURNS text[]		
+        LANGUAGE plpgsql
         IMMUTABLE STRICT
-        LANGUAGE "plpgsql"
-AS $$
+AS $function$
         DECLARE result text[];
         DECLARE word text;
         DECLARE clean_word text;
@@ -20,4 +20,4 @@ AS $$
 
                 RETURN ARRAY(SELECT DISTINCT e FROM unnest(result) AS a(e) ORDER BY e);
         END;
-$$;
+$function$;
