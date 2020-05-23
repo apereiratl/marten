@@ -7,8 +7,10 @@ using Xunit;
 
 namespace Marten.Testing.Linq
 {
+    using Marten.Testing.Harness;
+
     [ControlledQueryStoryteller]
-    public class query_with_in_Tests : DocumentSessionFixture<NulloIdentityMap>
+    public class query_with_in_Tests : IntegrationContextWithIdentityMap<NulloIdentityMap>
     {
         [Fact]
         public void can_query_against_integers()
@@ -64,6 +66,11 @@ namespace Marten.Testing.Linq
                 .Where(x => x.Role.In(roles));
 
             // ENDSAMPLE
+        }
+
+        public query_with_in_Tests(DefaultStoreFixture fixture)
+            : base(fixture)
+        {
         }
     }
 }
